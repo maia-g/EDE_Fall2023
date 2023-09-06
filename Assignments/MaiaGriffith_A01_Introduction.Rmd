@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Maia Griffith"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -40,21 +40,24 @@ Enter answers to the questions just below the >Answer: prompt.
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
 > Answer: 
+I have limited experience with data analytics from undergrad (which was a few years ago for me so very rusty), no experience with R or Git. I did take a course using Python, but again that was about 3 years ago. I also used MatLab for a research project, again though it was from undergrad so this all feels pretty new to me. 
 
 2. Are there any components of the course about which you feel confident?
 
 > Answer: 
+While my previous coding experiences were a while ago, I do remember the joy and relief that comes from figuring out an issue, so I feel confident in my ability to perservere through the pain and frustration until I succeed. 
 
 3. Are there any components of the course about which you feel apprehensive?
 
 > Answer: 
-
+Definitley feeling worried about the learning curve of coding and remembering all the stats, but excited to get into it!
 
 ## 3) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
 > Answer: 
+https://github.com/maia-g/EDE_Fall2023
 
 ## 4) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Sakai. 
