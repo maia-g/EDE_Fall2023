@@ -65,7 +65,7 @@ library(tidyverse)
 
 Question: What happens in the console when you load a package?
 
-> Answer: 
+> Answer: It shows all the things that come with that package.
 
 ### Import your datasets
 
@@ -79,7 +79,7 @@ Commons functions to import datasets and store as data frames are *read.table()*
 
 * *file = * : use this input to point to your data file. If it's on the same folder as your .Rmd then you only need to write the file name. But if it's on another folder you need to point to the path were file is located;
 * *header =* : if your file has a header you should set this to TRUE, o.w. FALSE;
-* *skip =* : if your file has rows explaining the data or any other rows on the top that need to be skipped you should just set skip to be equal to the number of row that should be skipped before reading the data. Mote that if header=TRUE, you should not skip the row with the header. The defaul is *skip=0*;
+* *skip =* : if your file has rows explaining the data or any other rows on the top that need to be skipped you should just set skip to be equal to the number of row that should be skipped before reading the data. Mote that if header=TRUE, you should not skip the row with the header. The default is *skip=0*;
 * *dec =* : define *dec="."* or *dec=","* depending on how it's defined on your set. The default is ".".
 
 ```{r Importing data}
@@ -108,6 +108,7 @@ Take a moment to read through the README file associated with the USGS dataset o
 
 ```{r Exploring data}
 View(USGS.flow.data)
+
 # Alternate option: click on data frame in Environment tab
 
 class(USGS.flow.data)
@@ -121,14 +122,15 @@ colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",
                               "gage.height.max", "gage.height.max.approval", 
                               "gage.height.min", "gage.height.min.approval", 
                               "gage.height.mean", "gage.height.mean.approval")
-str(USGS.flow.data)
-dim(USGS.flow.data)
-length(USGS.flow.data)
+str(USGS.flow.data) #shows data data frame and the objects in it
+dim(USGS.flow.data) #how many rows and cols you have
+length(USGS.flow.data) #how many cols
 
-head(USGS.flow.data)
-head(USGS.flow.data, 10)
-tail(USGS.flow.data, 5)
-USGS.flow.data[30000:30005, c(3, 8, 14)]
+head(USGS.flow.data) #shows first few rows of data (first 6)
+head(USGS.flow.data, 10) #the '10' specifies how many rows to show
+tail(USGS.flow.data, 5) # shows botom rows of data table
+
+USGS.flow.data[30000:30005, c(3, 8, 14)] #matrix notation to access certain chunk of data frame
 
 class(USGS.flow.data$datetime)
 class(USGS.flow.data$discharge.mean)
@@ -139,7 +141,7 @@ summary(USGS.flow.data)  #could point to column only with $
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> Answer: 
+> Answer: They are turned to NA
 
 ## Adjusting Datasets
 
@@ -153,12 +155,12 @@ summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
-> Answer: 
+> Answer: Depends on what you want to do with your dataset. For example with time series data, there are often many missing observations. If the missing obsv are in the beginning, you can remove them BUT when NA are in the middle of the data you need to be more careful. For time series, we DO NOT remove NAs, instead we replace them wiht a different value.
 
 ```{r Removing NAs}
-USGS.flow.data.complete <- na.omit(USGS.flow.data)
+USGS.flow.data.complete <- na.omit(USGS.flow.data) #creating NEW OBJECT to store altered data
 dim(USGS.flow.data)
-dim(USGS.flow.data.complete)
+dim(USGS.flow.data.complete) #notice that the COLUMNS did not change, only the ROWS
 
 mean(USGS.flow.data.complete$discharge.mean)
 sd(USGS.flow.data.complete$discharge.mean)
@@ -170,7 +172,7 @@ summary(USGS.flow.data.complete$discharge.mean)
 
 R will often import dates as factors or characters rather than dates. To fix, this we need to tell R that it is looking at dates. We also need to specify the format the dates are in. By default, if you don't provide a format, R will attempt to use %Y-%m-%d or %Y/%m/%d as a default. Note: if you are working collaboratively in an international setting, using a year-month-day format in spreadsheets is the least ambiguous of date formats. Make sure to check whether month-day-year or day-month-year is used in an ambiguously formatted spreadsheet.
 
-Formatting of dates in R: 
+Formatting of dates in R: Upper and Lower-case MATTERS
 
 %d  day as number (0-31)
 %m  month (00-12, can be e.g., 01 or 1)
@@ -196,7 +198,7 @@ format(today, format = "%B")
 #format(today, format = "")
 #format(today, format = "")
 
-USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") 
+USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") #replacing the date-time col we have now to one that has the specific format we want
 ```
 
 Note that for every date prior to 1969, R has assigned the date in the 2000s rather than the 1900s. This can be fixed with an `ifelse` statement inside a function. Run through the code below and write what is happening in the comment above each line.
@@ -207,13 +209,13 @@ USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
 
 #
 create.early.dates <- (function(d) {
-       paste0(ifelse(d > 191226,"19","20"),d)
+       paste0(ifelse(d > 191226,"19","20"),d) #basically attaching at 19 or 20 (depending on the date) to the current values already assigned
        })
 #
 USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
 
 #
-USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y%m%d") 
+USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y%m%d") #now converting BACK to into date once correct years are attahced 
 
 ```
 
