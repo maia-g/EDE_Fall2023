@@ -3,6 +3,8 @@ title: "Lab 3 - Data Types | Exploring Datasets"
 author: "Environmental Data Analytics | John Fay and Luana Lima "
 date: "Fall 2023"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -20,12 +22,14 @@ knitr::opts_chunk$set(echo = TRUE)
 R treats objects differently based on their characteristics. For more information, please see: <https://www.statmethods.net/input/datatypes.html>.
 
 -   **Vectors** 1 dimensional structure that contains elements of the same type.
+  (all numbers, or characters, or logical)
 
 -   **Matrices** 2 dimensional structure that contains elements of the same type.
+  (simialr to DF but do NOT accept columns of diff data types)
 
 -   **Arrays** Similar to matrices, but can have more than 2 dimensions. We will not delve into arrays in depth.
 
--   **Lists** Ordered collection of elements that can have different modes.
+-   **Lists** Ordered collection of elements that can have different modes. You can have a matrix, an array, a DF, etc.
 
 -   **Data Frames** 2 dimensional structure that is more general than a matrix. Columns can have different modes (e.g., numeric and factor). When we import csv files into the R workspace, they will enter as data frames.
 
@@ -40,10 +44,10 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3] # to access an ELEMENT in a vector you put the number of WHERE you want to pull. aka 3 is the going to pull the third element
 
 # Matrices ----
-matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
+matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # provide the matrix with the number of rows:num of cols, and what number of rows/cols you want it to make
 matrix1
 matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
 matrix2
@@ -51,11 +55,11 @@ matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma c
                   dimnames = list(c("uno", "dos", "tres", "quatro", "cinco"), 
                                   c("un", "deux", "trois", "quatre"))) #
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] # wants 4th row, all columns
+matrix1[ , 3] # wants all rows and the third col
+matrix1[c(12, 14)] # this calls index 12 and 14 of the matrix, without the c may be more useful
+matrix1[c(12:14)] # this calls all elements between the 12th and 14th element
+matrix1[2:4, 1:3] # this creates a new matrix with those specific ranges
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
@@ -69,15 +73,15 @@ list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3
 list1[[2]]
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+d <- c(1, 2, 3, 4) # What type of vector? NUMERIC
+e <- c("red", "white", "red", NA) # What type of vector? CHARACTER
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? LOGICAL
+dataframe1 <- data.frame(d,e,f) # creates a dataframe that is combining d, e, and f vectors
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # renames the col name for the three variables
 
-dataframe1[1:2,] # 
+dataframe1[1:2,] # this calls the first 2 rows and all the cols
 dataframe1[c("ID","Passed")] # 
-dataframe1$ID
+dataframe1$ID #dollar sign means you are accessing that specific part of the df
 
 ```
 
@@ -94,25 +98,37 @@ Question: In the R chunk below, write "dataframe1\$". Press `tab` after you type
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r DataExercise-1a}
-
+high_temp_f <- c(81, 83, 83, 84, 78, 71, 79, 82, 83, 84)
+low_temp_f <- c(55, 56, 58, 60, 61, 63, 63, 64, 58, 60)
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius. Use a function to create the two new vectors from your existing ones in Fahrenheit.
 
 ```{r DataExercise-1b}
+f_to_c_fctn <- function(temp_f){
+  (temp_f - 32) * (5/9)
+}
 
+high_temp_c <- f_to_c_fctn(high_temp_f)
+low_temp_c <- f_to_c_fctn(low_temp_f)
+
+high_temp_c #these two things make sure it prints in the code
+low_temp_c
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r DataExercise-1c}
+df_temp <- data.frame(high_temp_f, high_temp_c, low_temp_f, low_temp_c)
 
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r DataExercise-1d}
-
+summary (df_temp)
+sd (df_temp) #this will NOT work bc you can't apply sd to a data frame, you must ask it to do it for a certain column
+sd(df_temp$high_temp_f) #use the $ to call out the specific one
 ```
 
 ### Date objects
@@ -127,10 +143,10 @@ Remember formatting of dates in R:
 # An example is provided to get you started.
 # (code must be uncommented)
 today <- Sys.Date()
-format(today, format = "%B")
-#format(today, format = "")
-#format(today, format = "")
-#format(today, format = "")
+format(today, format = "%B") # prints 'September'
+format(today, format = "%m") # prints '09'
+format(today, format = "%d-%m") # prints '18-09'
+format(today, format = "%A-%b-%Y") # prints 'Monday-Sep-2023'
 
 ```
 
@@ -145,9 +161,9 @@ More info on lubridate [here][<https://cran.r-project.org/web/packages/lubridate
 library(lubridate)
 
 #Ex1
-str_today <- "2023-feb-7"
+str_today <- "2023-feb-7" #this shows up in the env with QUOTES which means it is character
 #Since the format is year-month-day we will use function ymd()
-date_obj_today <- ymd(str_today)
+date_obj_today <- ymd(str_today) #this shows up in env in the date format
 date_obj_today
 
 #Ex2
@@ -158,14 +174,14 @@ date_obj_today
 
 #Ex_3 - on your own...
 str_juneteenth <- "19 June 1865"
-#Since the format is month-day-year we will use function mdy()
-#date_juneteenth <- ()
-#date_juneteenth
+#Since the format is month-day-year we will use function dmy()
+date_juneteenth <- dmy(str_juneteenth)
+date_juneteenth
 ```
 
 ```{r DateExercise2}
 #century issue
-str_past <- "55-feb-3"
+str_past <- "55-feb-3" #two digit year assumes we are in 2000s, not the 1900s or before
 date_obj_past <- ymd(str_past)
 date_obj_past
 
@@ -184,7 +200,7 @@ fixed_date_obj_past
 #Fix for century issue
 str_past <- "55-feb-3"
 #Alternative 1
-date_obj_past <- fast_strptime(str_past,"%y-%b-%d",cutoff_2000=23L)
+date_obj_past <- fast_strptime(str_past,"%y-%b-%d",cutoff_2000=23L) #cutoff_2000 is an argument name
 date_obj_past
 
 #Alternative 2

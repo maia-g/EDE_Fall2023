@@ -98,7 +98,7 @@ An alternate to a histogram is a frequency polygon graph (distributions of value
 ggplot(USGS.flow.data) + #supplying data
   #geom_histogram(aes(x = gage.height.mean), bins = 50) #makes a histogram
   geom_freqpoly(aes(x = gage.height.mean), bins = 50) + #makes a line 
-  geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "red") + #changes color
+  geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "red") + #changes color of specific line vs in aes would be changing by category
   geom_freqpoly(aes(x = gage.height.max), bins = 50,  lty = 2) + #lty is line type
   scale_x_continuous(limits = c(0, 10))
 
@@ -128,7 +128,7 @@ An alternate option is a violin plot, which displays density distributions, some
 ggplot(USGS.flow.data) +
   geom_boxplot(aes(x = gage.height.mean.approval, y = gage.height.mean))
 
-#taking diff slices of data and looking at the dist which is done with the 'group' command. sorta like a histogram but instead of counts we are looking at distribution of values within th ebins
+#taking diff slices of data and looking at the dist which is done with the 'group' command. sorta like a histogram but instead of counts we are looking at distribution of values within the bins
 ggplot(USGS.flow.data) +
   geom_boxplot(aes(x = gage.height.mean, y = discharge.mean, group = cut_width(gage.height.mean, 1)))
 
