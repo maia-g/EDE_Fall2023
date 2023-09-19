@@ -137,6 +137,7 @@ ggplot(USGS.flow.data) +
 ggplot(USGS.flow.data) +
   geom_violin(aes(x = gage.height.mean.approval, y = gage.height.mean), 
               draw_quantiles = c(0.25, 0.5, 0.75))
+#length(USGS.flow.data$gage.height.mean)
 ```
 
 ### Scatterplot (function: geom_point)

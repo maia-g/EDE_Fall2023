@@ -33,6 +33,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
 ```{r Q1,  message = FALSE}
+
 #checking directory
 getwd() 
 
@@ -48,8 +49,8 @@ Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv", stringsA
 Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv", stringsAsFactors = T)
 
 ###QUESTION: Do I still need to call these out since it is enormous?
-Neonics 
-Litter
+#Neonics 
+#Litter
 
 ```
 
@@ -156,21 +157,13 @@ class(Litter$collectDate) #The class is factor.
 Litter$collectDate[1] #This shows it is in year-month-day format
 
 #Change into date class.
-
-###QUESTION: Should I be changing this in the dataframe Litter or is it ok to create a new vector? I tried to use the lubridate ymd() function on the dataframe itself but it did not change the class to Date.
-#ymd(Litter$collectDate)
-
-lit_collectDate_str <- (Litter$collectDate)
-lit_collectDate_str
-
-lit_collectDate_DATE <- ymd(lit_collectDate_str)
-lit_collectDate_DATE
+Litter$collectDate <- as.Date(Litter$collectDate, format = "%Y-%m-%d")
 
 #Check to see if it changed.
-class(lit_collectDate_DATE) #this vector is now a Date class.
+class(Litter$collectDate) #this vector is now a Date class.
 
 #Using the `unique` function.
-unique(lit_collectDate_DATE) #shows Aug 2nd and 30th were sample dates.
+unique(Litter$collectDate) #shows Aug 2nd and 30th were sample dates.
 
 ```
 
@@ -192,19 +185,32 @@ unique(Litter$plotID)
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r Q14}
+#Used ggplot and geom_bar to make the graph.
+ggplot(Litter) +
+  geom_bar(aes(x = functionalGroup))
 
+#the Functional Group "Mixed" has the least by quite a lot, but the others are fairly equally distributed.
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r}
+```{r Q15}
+#First going to make the box plot with x-axis as functional group and y-axis as dryMass.
+ggplot(Litter) +
+  geom_boxplot(aes(x = functionalGroup, y = dryMass)) 
 
+#Next going to create a violin plot with same axis.
+ggplot(Litter) +
+  geom_violin(aes(x = functionalGroup, y = dryMass))
+#Violin plot does not look very good but I think I did it right.
+
+length(Litter$dryMass) #Wanted to know how many data points we had
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer:
+> Answer: The boxplot is more effective in this case because there are not a huge amount of data points to show any visible distribution. When we used the USGS dataset in the lesson, there were thousands of data points so the width of the violin plots were actaully discernable.
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:
+> Answer: Needles and Mixed tend to have the highest biomass, with one outlier in Twigs/branches that is a very high value.
