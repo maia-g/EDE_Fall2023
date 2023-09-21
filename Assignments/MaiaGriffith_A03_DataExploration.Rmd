@@ -1,10 +1,12 @@
 ---
-title: "Assignment 3: Data Exploration"
+title: 'Assignment 3: Data Exploration'
 author: "Maia Griffith"
 date: "Fall 2023"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -32,7 +34,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r Q1-Importing Data,  message = FALSE}
+```{r Q1-Importing_Data,  message = FALSE}
 
 #checking directory
 getwd() 
@@ -44,11 +46,6 @@ library(lubridate)
 #Import datasets
 Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = T)
 Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv", stringsAsFactors = T)
-
-
-###QUESTION: Do I still need to call these out since it is enormous?
-#Neonics 
-#Litter
 
 ```
 
@@ -75,20 +72,18 @@ Litter <- read.csv("./Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv", strin
 
 5.  What are the dimensions of the dataset?
 
-```{r Q5- Dimensions}
-
+```{r Q5-Dimensions}
+#Shows that the dimensions of Neonics is 4623 rows and 30 columns
 dim(Neonics)
 
-#Shows that the dimensions of Neonics is 4623 rows and 30 columns
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r Q6- Most Commonly Studied Effects}
-
+```{r Q6-Most_Commonly_Studied_Effects}
+#Shows the number of studies done for each Effect.
 summary(Neonics$Effect)
 
-#Shows the number of studies done for each Effect.
 ```
 
 > Answer: Population (1803) and Mortality (1493) are by far the most common effects studied, probably because it is really important for biologists to know how big an insect population is in an area and how many die, especially when looking at impacts of an insecticide.
@@ -96,7 +91,7 @@ summary(Neonics$Effect)
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
-```{r Q7- Most Commonly Studied Species}
+```{r Q7-Most_Commonly_Studied_Species}
 
 #Created a variable that will sort the common name data
 sorted_common_name <- sort(summary(Neonics$Species.Common.Name))
@@ -112,11 +107,10 @@ top_6
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r Q8- Reveal Column Class}
-
+```{r Q8-Reveal_Column_Class}
+#Returns the class of the data.
 class(Neonics$Conc.1..Author.)
 
-#Returns the class of the data.
 ```
 
 > Answer: The class is "factor" because when we imported the dataset we made all the data into factors using the `stringAsFactors = T` command.
@@ -125,22 +119,20 @@ class(Neonics$Conc.1..Author.)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r Q9- Studies per Year}
-
+```{r Q9-Studies_per_Year}
+#Generates a line graph of total number of studies per year.
 ggplot(Neonics) +
   geom_freqpoly(aes(x = Publication.Year))
 
-#Generates a line graph of total number of studies per year.
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r Q10- Studies per Year by Location}
-
+```{r Q10-Studies_per_Year_by_Location}
+#Generates a line graph with 4 lines, one for each location type.
 ggplot(Neonics) +
   geom_freqpoly(aes(x = Publication.Year, color = Test.Location))
 
-#Generates a line graph with 4 lines, one for each location type.
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -151,13 +143,12 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
-```{r Q11- Bar Graph of Endpoints}
-
+```{r Q11-Bar_Graph_of_Endpoints}
+#Generates a bar graph showing the frequency of use of each type of Endpoint.
 ggplot(Neonics) + 
   geom_bar(aes(x = Endpoint)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
-#Generates a bar graph showing the frequency of use of each type of Endpoint.
 ```
 
 > Answer: The two most common end points are LOEL and NOEL, which are both terrestrial-based codes. LOEL is defined as the "Lowest-observable-effect-level" in the Code Appendix, meaning the lowest concentration of toxins that resulted in significant effects. NOEL is defined as "No-observable-effect-level" in the Code Appendix, meaning the highest concentration of toxins that DO NOT result in significant effects.
@@ -166,7 +157,7 @@ ggplot(Neonics) +
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r Q12- Changing Dates in Litter}
+```{r Q12-Changing_Dates_in_Litter}
 
 class(Litter$collectDate) #The class is factor.
 
@@ -186,7 +177,7 @@ unique(Litter$collectDate) #Shows Aug 2nd and 30th were sample dates.
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
-```{r Q13- Unique vs Summary}
+```{r Q13-Unique_vs_Summary}
 #Used the length AND unique functions together to return the number of plots sampled.
 length(unique(Litter$plotID))
 
@@ -194,25 +185,24 @@ length(unique(Litter$plotID))
 summary(Litter$plotID)
 unique(Litter$plotID)
 
-###QUESTION: What are Levels? Google was not helpful...
 ```
 
-> Answer: Summary returns the plot IDs AND how many times each was sampled. Unique returns all the different plot IDs and excludes repeats. It also includes "Levels" which shows the plot IDs in ascending order.
+> Answer: Summary returns the plot IDs AND how many times each was sampled. Unique returns all the different plot IDs and excludes repeats. It also includes "Levels" which are essentially all the different categories of data, in this case it is the same as the unique values, but in other datasets it could include Levels that do not have data associated with them.
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
-```{r Q14- Types of Litter Collected}
+```{r Q14-Types_of_Litter_Collected}
 
 #Used ggplot and geom_bar to make the graph.
 ggplot(Litter) +
   geom_bar(aes(x = functionalGroup))
 
-#The Functional Group "Mixed" has the least by quite a lot, but the others are fairly equally distributed.
+#"Mixed" has the least by quite a lot, but the others are fairly equally distributed.
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r Q15- Box plot vs Violin Plot}
+```{r Q15-Box_plot_vs_Violin_Plot}
 
 #First going to make the box plot with x-axis as functional group and y-axis as dryMass.
 ggplot(Litter) +
@@ -221,7 +211,6 @@ ggplot(Litter) +
 #Next going to create a violin plot with same axis.
 ggplot(Litter) +
   geom_violin(aes(x = functionalGroup, y = dryMass))
-#Violin plot does not look very good but I think I did it right.
 
 length(Litter$dryMass) #Wanted to know how many data points we had
 ```
