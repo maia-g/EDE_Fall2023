@@ -13,12 +13,14 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 #Read packages
 library(tidyverse);library(lubridate); library(here)
 
+#Note: `here` package does't use autocomplete, best to type in the cosole and then copy-paste into the rmd file
+
 #Read in data, don't convert strings to factors
-sites <- read.csv(here('Data/Raw/NWIS_SiteFlowData_NE_Raw.csv'))
+sites <- read.csv(here('Data/Raw/NWIS_SiteFlowData_NE_RAW.csv')) # you can separate by commas instead too; did NOT include 'stringAsFactors' argument
 dim(sites)
 
 #Convert date column to date object
-sites$date <- ymd_hms(sites$date)
+sites$date <- ymd_hms(sites$date) #year, month, day, hours, minutes, seconds using the LUBRIDATE function
 
 ```
 
@@ -29,6 +31,7 @@ sites$date <- ymd_hms(sites$date)
 
 #Compute the day of the week each sample was collected
 sites$dow <- wday(sites$date)
+class(sites$date)
 
 ## What class is the dow column?
 class(sites$dow)
@@ -38,22 +41,22 @@ unique(sites$dow)
 
 #Summary - is it meaningful?
 summary(sites$dow)
-
+#not all numbers are actual real values, they could also be representative of names (or days of the week as seen here)
 ```
 
 ## Convert the days of the week to a factor
 ```{r convert dow column to factor and explore}
 
-#Convert to a factor
+#Converting a vector to a factor
 sites$dow <- factor(sites$dow)
 
-## What class is the dow column now?
+## What class is the dow column now? --> factor with 3 levels
 class(sites$dow)
 
-#List the unique values in the column
+#List the unique values in the column --> Levels show all the categories, even if there are no data points attached to it
 unique(sites$dow)
 
-#Summary - is it meaningful?
+#Summary - is it meaningful? --> gives list of unique values and the count for each
 summary(sites$dow)
 
 #Show the levels associated with our factor column
@@ -68,22 +71,23 @@ A **factor** is a grouping variable: rows with the same value in the factor colu
 ```{r plot samples recorded each day of the week}
 #Create a bar plot showing the count of samples by day of week
 ggplot(sites,aes(x=dow)) +
-  geom_bar()
+  geom_bar() #only shows tues wed and thurs which are the only levels that currently exist
 ```
 
 
 
 ```{r add levels to our data}
 #Update the levels to include all seven days of the week (note we have to start with existing levels)
-levels(sites$dow) <- c(levels(sites$dow),"1","2","6","7")
+levels(sites$dow) <- c(levels(sites$dow),"1","2","6","7") #using levels command, call the original levels, creates a list that adds new levels to the list; this does NOT impact the data, only the LEVELS
 
 #Confirm the change
 levels(sites$dow)
+summary(sites$dow)
 
 #Plot again
 ggplot(sites,aes(x=dow)) +
-  geom_bar() + 
-  scale_x_discrete(drop=FALSE)
+  geom_bar() + #first two lines make a chart that look the same as first one (only days that have vals)
+  scale_x_discrete(drop=FALSE) #this adds the other levels, but still looks not good, so move to next block
 
 ```
 
@@ -99,18 +103,19 @@ levels(sites$dow)
 #View the plot
 ggplot(sites,aes(x=dow)) +
   geom_bar() + 
-  scale_x_discrete(drop=FALSE)
+  scale_x_discrete(drop=FALSE) #now the levels have been reordered (does NOT change data) and plot looks better
 
-#Add **labels** to our factors
+#Add **labels** to our factors to make numbers have the day of the week
+#This is also an example of tidy code that he wants to see
 sites$dow <- factor(
   sites$dow, 
   levels=c("1","2","3","4","5","6","7"),
-  labels=c("Sun","Mon","Tue","Wed","Thu","Fri","Sat"))
+  labels=c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")) #they need to have a 1:1 correspondance
 
 #See that the levels are updated
 levels(sites$dow)
 
-#View the plot
+#View the plot and now it makes sense and has all the days of the week!
 ggplot(sites,aes(x=dow)) +
   geom_bar() + 
   scale_x_discrete(drop=FALSE)
