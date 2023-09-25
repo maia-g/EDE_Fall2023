@@ -1,0 +1,119 @@
+---
+title: "Lab 4: Factors"
+author: "Environmental Data Analytics | John Fay and Luana Lima "
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+#Read packages
+library(tidyverse);library(lubridate); library(here)
+
+#Read in data, don't convert strings to factors
+sites <- read.csv(here('Data/Raw/NWIS_SiteFlowData_NE_Raw.csv'))
+dim(sites)
+
+#Convert date column to date object
+sites$date <- ymd_hms(sites$date)
+
+```
+
+
+## Examine the lakename column as a character column
+* Tip - Lubridate cheatsheet: <https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf>
+```{r create and explore days of week column}
+
+#Compute the day of the week each sample was collected
+sites$dow <- wday(sites$date)
+
+## What class is the dow column?
+class(sites$dow)
+
+#List the unique values in the column
+unique(sites$dow)
+
+#Summary - is it meaningful?
+summary(sites$dow)
+
+```
+
+## Convert the days of the week to a factor
+```{r convert dow column to factor and explore}
+
+#Convert to a factor
+sites$dow <- factor(sites$dow)
+
+## What class is the dow column now?
+class(sites$dow)
+
+#List the unique values in the column
+unique(sites$dow)
+
+#Summary - is it meaningful?
+summary(sites$dow)
+
+#Show the levels associated with our factor column
+levels(sites$dow)
+```
+
+## Factors & Levels
+A **factor** is a grouping variable: rows with the same value in the factor column are members of the same group. For example, all rows with a `dow` of 3 were collected on a Tuesday.
+
+**Levels** are the unique values that the factors can take. The `unique()` function reveals the levels as does the `levels()` function. By default, the levels includes only the values in the factor column. However, we can add additional levels and we can also re-order levels. Why would we want to do this? Well, one example would be if we wanted to plot the number of samples recorded each day of the week, and in that plot we wanted to include all days of the week, not just the one's found in our data...
+
+```{r plot samples recorded each day of the week}
+#Create a bar plot showing the count of samples by day of week
+ggplot(sites,aes(x=dow)) +
+  geom_bar()
+```
+
+
+
+```{r add levels to our data}
+#Update the levels to include all seven days of the week (note we have to start with existing levels)
+levels(sites$dow) <- c(levels(sites$dow),"1","2","6","7")
+
+#Confirm the change
+levels(sites$dow)
+
+#Plot again
+ggplot(sites,aes(x=dow)) +
+  geom_bar() + 
+  scale_x_discrete(drop=FALSE)
+
+```
+
+We now have all days of the week, but the order is incorrect. Also, we have day numbers, not day names. How to fix?
+```{r reorder and rename levels}
+
+#Reorder by overwriting the column with the existing values assigned with a new order of levels
+sites$dow <- factor(sites$dow, levels=c("1","2","3","4","5","6","7")) #Or... as.character(seq(1,7))
+
+#See that the levels are updated
+levels(sites$dow)
+
+#View the plot
+ggplot(sites,aes(x=dow)) +
+  geom_bar() + 
+  scale_x_discrete(drop=FALSE)
+
+#Add **labels** to our factors
+sites$dow <- factor(
+  sites$dow, 
+  levels=c("1","2","3","4","5","6","7"),
+  labels=c("Sun","Mon","Tue","Wed","Thu","Fri","Sat"))
+
+#See that the levels are updated
+levels(sites$dow)
+
+#View the plot
+ggplot(sites,aes(x=dow)) +
+  geom_bar() + 
+  scale_x_discrete(drop=FALSE)
+```
+
+## An exercise for you: see if you can plot the number of samples recorded each month
