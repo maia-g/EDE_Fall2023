@@ -1,8 +1,10 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Maia Griffith"
 output: pdf_document
 geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## OVERVIEW
@@ -31,13 +33,27 @@ The completed exercise is due on Thursday, Sept 28th @ 5:00pm.
 2. Apply the `glimpse()` function to reveal the dimensions, column names, and structure of each dataset. 
 
 ```{r setup, message = FALSE}
-#1a 
+#1a Loading the packages
+library(tidyverse)
+library(lubridate)
+library(here)
 
-#1b 
+#1b Checking the working directory
+getwd()
 
-#1c 
+#1c Reading in each file, first the two O3 files and then the two PM25 files
+Air.O3.NC18 <-read.csv(file=here("./Data/Raw/EPAair_O3_NC2018_raw.csv"), stringsAsFactors = TRUE)
+Air.O3.NC19 <- read.csv(file=here("./Data/Raw/EPAair_O3_NC2019_raw.csv"), stringsAsFactors = TRUE)
 
-#2 
+Air.PM25.NC18 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2018_raw.csv"), stringsAsFactors = TRUE)
+Air.PM25.NC19 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2019_raw.csv"), stringsAsFactors = TRUE)
+
+#2 using the `glimpse()` function
+glimpse(Air.O3.NC18)
+glimpse(Air.O3.NC19)
+
+glimpse(Air.PM25.NC18)
+glimpse(Air.PM25.NC19)
 
 ```
 
@@ -53,13 +69,50 @@ The completed exercise is due on Thursday, Sept 28th @ 5:00pm.
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r}
-#3
+#3 Glimpse showed us the date col was in 2 digit month, 2 digit day, and 4 digit year format
+# Looking at the class for each to show they are currently factors.
+class(Air.O3.NC18$Date) 
+class(Air.O3.NC19$Date)
+class(Air.PM25.NC18$Date)
+class(Air.PM25.NC19$Date)
 
-#4
+# Using lubridate functions to change date columns in each dataset.
+Air.O3.NC18$Date <- mdy(Air.O3.NC18$Date)
+Air.O3.NC19$Date <- mdy(Air.O3.NC19$Date)
 
-#5
+Air.PM25.NC18$Date <- mdy(Air.PM25.NC18$Date)
+Air.PM25.NC19$Date <- mdy(Air.PM25.NC19$Date)
+
+# Looking at the class for each to show they are now date objects.
+class(Air.O3.NC18$Date)
+class(Air.O3.NC19$Date)
+
+class(Air.PM25.NC18$Date)
+class(Air.PM25.NC19$Date)
+
+#4 Selecting only certain columns. I used the select() function.
+Air.O3.NC18.processed <- 
+  Air.O3.NC18 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+Air.O3.NC19.processed <- 
+  Air.O3.NC19 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+Air.PM25.NC18.processed <- 
+  Air.PM25.NC18 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+Air.PM25.NC19.processed <- 
+  Air.PM25.NC19 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+#5 Changing column values to PM2.5 in both datasets
+
+Air.PM25.NC18.processed$AQS_PARAMETER_DESC <- "PM2.5"
+Air.PM25.NC19.processed$AQS_PARAMETER_DESC <- "PM2.5"
 
 #6
+
+write.csv(Air.O3.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
 
 ```
 
