@@ -120,11 +120,15 @@ Air.PM25.NC19.processed$AQS_PARAMETER_DESC <- "PM2.5"
 
 #6 Saving processed data
 
-write.csv(Air.O3.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
-write.csv(Air.O3.NC19.processed, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
+write.csv(Air.O3.NC18.processed, row.names = FALSE, 
+          file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(Air.O3.NC19.processed, row.names = FALSE, 
+          file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
 
-write.csv(Air.PM25.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
-write.csv(Air.PM25.NC19.processed, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
+write.csv(Air.PM25.NC18.processed, row.names = FALSE, 
+          file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(Air.PM25.NC19.processed, row.names = FALSE, 
+          file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
 
 ```
 
@@ -171,7 +175,7 @@ dim(Air.Combo)
 #8 Making a pipe.
 Air.Combo.Subset <-
   Air.Combo %>%
-  filter(Site.Name %in% c("Durham Armory", "Leggett", 
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", 
                           "Hattie Avenue", "Clemmons Middle", 
                           "Mendenhall School", "Frying Pan Mountain", 
                           "West Johnston Co.", "Garinger High School", 
@@ -181,18 +185,16 @@ Air.Combo.Subset <-
   summarise(Mean_AQI = mean(DAILY_AQI_VALUE),
             Mean_Lat = mean(SITE_LATITUDE),
             Mean_Long = mean(SITE_LONGITUDE)) %>%
-  mutate(month = month(Date),
-         year = year(Date))
-  
-###ISSUE: I'm somehow getting 14,125 observations of 9 vars instead of 14,752??
- 
+  mutate(Month = month(Date),
+         Year = year(Date))
+
+dim(Air.Combo.Subset) # Showing dimensions match the goal
 
 #9 Spreading the data so PM2.5 and Ozone have their own column
 Air.Combo.Subset.Spread <- 
   pivot_wider(Air.Combo.Subset, 
               names_from = AQS_PARAMETER_DESC, 
               values_from = Mean_AQI)
-
 
 #10
 dim(Air.Combo.Subset.Spread)
@@ -214,8 +216,7 @@ write.csv(Air.Combo.Subset.Spread, row.names = FALSE,
 #12 
 Air.Summary <-
   Air.Combo.Subset.Spread %>%
-  group_by(Site.Name, month, year) %>% 
-  ###ISSUE: output says summarise grouped by only the first two things?
+  group_by(Site.Name, Month, Year) %>% 
   summarise(Mean_Ozone = mean(Ozone),
             Mean_PM2.5 = mean(PM2.5)) %>%
   drop_na(Mean_Ozone)
