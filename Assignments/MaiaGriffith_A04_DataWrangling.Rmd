@@ -42,11 +42,15 @@ library(here)
 getwd()
 
 #1c Reading in each file, first the two O3 files and then the two PM25 files
-Air.O3.NC18 <-read.csv(file=here("./Data/Raw/EPAair_O3_NC2018_raw.csv"), stringsAsFactors = TRUE)
-Air.O3.NC19 <- read.csv(file=here("./Data/Raw/EPAair_O3_NC2019_raw.csv"), stringsAsFactors = TRUE)
+Air.O3.NC18 <-read.csv(file=here("./Data/Raw/EPAair_O3_NC2018_raw.csv"), 
+                       stringsAsFactors = TRUE)
+Air.O3.NC19 <- read.csv(file=here("./Data/Raw/EPAair_O3_NC2019_raw.csv"), 
+                        stringsAsFactors = TRUE)
 
-Air.PM25.NC18 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2018_raw.csv"), stringsAsFactors = TRUE)
-Air.PM25.NC19 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2019_raw.csv"), stringsAsFactors = TRUE)
+Air.PM25.NC18 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2018_raw.csv"), 
+                         stringsAsFactors = TRUE)
+Air.PM25.NC19 <-read.csv(file=here("./Data/Raw/EPAair_PM25_NC2019_raw.csv"), 
+                         stringsAsFactors = TRUE)
 
 #2 using the `glimpse()` function
 glimpse(Air.O3.NC18)
@@ -69,7 +73,7 @@ glimpse(Air.PM25.NC19)
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r}
-#3 Glimpse showed us the date col was in 2 digit month, 2 digit day, and 4 digit year format
+#3 Date col is in 2 digit month, 2 digit day, and 4 digit year format
 # Looking at the class for each to show they are currently factors.
 class(Air.O3.NC18$Date) 
 class(Air.O3.NC19$Date)
@@ -93,26 +97,34 @@ class(Air.PM25.NC19$Date)
 #4 Selecting only certain columns. I used the select() function.
 Air.O3.NC18.processed <- 
   Air.O3.NC18 %>%
-  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+         COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 Air.O3.NC19.processed <- 
   Air.O3.NC19 %>%
-  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+         COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 Air.PM25.NC18.processed <- 
   Air.PM25.NC18 %>%
-  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+         COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 Air.PM25.NC19.processed <- 
   Air.PM25.NC19 %>%
-  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, 
+         COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5 Changing column values to PM2.5 in both datasets
 
 Air.PM25.NC18.processed$AQS_PARAMETER_DESC <- "PM2.5"
 Air.PM25.NC19.processed$AQS_PARAMETER_DESC <- "PM2.5"
 
-#6
+#6 Saving processed data
 
 write.csv(Air.O3.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(Air.O3.NC19.processed, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
+
+write.csv(Air.PM25.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(Air.PM25.NC19.processed, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
 
 ```
 
@@ -138,16 +150,56 @@ write.csv(Air.O3.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPA
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
 ```{r}
-#7 
+#7 Combining datasets
 
-#8 
+# Making sure all the datasets have the same column names (they do)
+colnames(Air.O3.NC18.processed)
+colnames(Air.O3.NC19.processed)
 
-#9
+colnames(Air.PM25.NC18.processed)
+colnames(Air.PM25.NC19.processed)
+
+# Using rbind to combine.
+Air.Combo <- rbind(Air.O3.NC18.processed, 
+                   Air.O3.NC19.processed, 
+                   Air.PM25.NC18.processed, 
+                   Air.PM25.NC19.processed)
+
+# Checking the dimensions to make sure it combined right.
+dim(Air.Combo)
+
+#8 Making a pipe.
+Air.Combo.Subset <-
+  Air.Combo %>%
+  filter(Site.Name %in% c("Durham Armory", "Leggett", 
+                          "Hattie Avenue", "Clemmons Middle", 
+                          "Mendenhall School", "Frying Pan Mountain", 
+                          "West Johnston Co.", "Garinger High School", 
+                          "Castle Hayne", "Pitt Agri. Center", 
+                          "Bryson City", "Millbrook School")) %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(Mean_AQI = mean(DAILY_AQI_VALUE),
+            Mean_Lat = mean(SITE_LATITUDE),
+            Mean_Long = mean(SITE_LONGITUDE)) %>%
+  mutate(month = month(Date),
+         year = year(Date))
+  
+###ISSUE: I'm somehow getting 14,125 observations of 9 vars instead of 14,752??
+ 
+
+#9 Spreading the data so PM2.5 and Ozone have their own column
+Air.Combo.Subset.Spread <- 
+  pivot_wider(Air.Combo.Subset, 
+              names_from = AQS_PARAMETER_DESC, 
+              values_from = Mean_AQI)
+
 
 #10
+dim(Air.Combo.Subset.Spread)
 
 #11
-
+write.csv(Air.Combo.Subset.Spread, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 ```
 
 
@@ -159,14 +211,22 @@ write.csv(Air.O3.NC18.processed, row.names = FALSE, file = "./Data/Processed/EPA
 
 ```{r}
 
-#12
-
+#12 
+Air.Summary <-
+  Air.Combo.Subset.Spread %>%
+  group_by(Site.Name, month, year) %>% 
+  ###ISSUE: output says summarise grouped by only the first two things?
+  summarise(Mean_Ozone = mean(Ozone),
+            Mean_PM2.5 = mean(PM2.5)) %>%
+  drop_na(Mean_Ozone)
+  #na.omit(Mean_Ozone) Used this to test answer to number 14
 
 #13
+dim(Air.Summary)
 
-
+#14
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: `drop_na` will look into a specific column for NA values and remove only rows where there are NAs in that specific column, whereas `na.omit` will remove rows in which ANY column has NA values. I tested this in my pipe by running it with `na.omit` and then `drop_na` and `na.omit` deleted rows where PM2.5 had NA values even though I specified the column I wanted it to look at.
