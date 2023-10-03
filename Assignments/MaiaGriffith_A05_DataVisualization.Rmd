@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
+author: "Maia Griffith"
 date: "Fall 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -31,10 +31,35 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 2. Make sure R is reading dates as date format; if not change the format to date.
 
 ```{r initialize project}
-#1 
+#1 Loading packages
+library(tidyverse)
+library(lubridate)
+library(here)
+library(cowplot)
 
-#2 
+# Verifying home working directory
+here()
 
+#Assign a variable to the processed data folder location
+processed_data = "Data/Processed_KEY"
+
+# Reading in data files
+PetPau.chem.nut <- read.csv(
+  here(processed_data,"NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
+  stringsAsFactors = TRUE)
+Litter <- read.csv(
+  here(processed_data,"NEON_NIWO_Litter_mass_trap_Processed.csv"),
+  stringsAsFactors = TRUE)
+
+#2  I know they are factors because of the `stringAsFactors = TRUE`
+
+# Changing them to Date format
+PetPau.chem.nut$sampledate <- ymd(PetPau.chem.nut$sampledate)
+Litter$collectDate <- ymd(Litter$collectDate)
+
+# Check the class. They are Date format.
+class(PetPau.chem.nut$sampledate)
+class(Litter$collectDate)
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme. Customize the look of at least two of the following: 
@@ -45,8 +70,20 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
  * Legend
 
 ```{r build plot theme}
-#3
-
+#3 Custom theme
+MG_theme <- theme_base()  + 
+  theme(
+    plot.title = element_text(
+      color = 'maroon',
+      size = '14'),
+    axis.title.x = element_text(
+      color = 'maroon'),
+    axis.title.y = element_text(
+      color = 'maroon'),
+    plot.background =   element_rect(
+      fill = 'honeydew'),
+    legend.position = 'bottom',
+    )
 ```
 
 ## Create graphs
@@ -56,6 +93,21 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r plot total P vs PO4}
 #4 
+
+###ISSUE: where to find list of best practices
+###FOR ME: mess with colors and stuff, basics of q4 are done
+theme_set(MG_theme)
+
+tp_po4_plot <- 
+  ggplot(PetPau.chem.nut,
+         aes(x = po4,
+             y = tp_ug,
+             color = lakename)) + ### ISSUE: does this count as diff aes for each lake or does it mean to use the aes command twice?
+  geom_point() +
+  geom_smooth(method = "lm", color = 'black') +
+  xlim(0,45)
+  
+tp_po4_plot
 
 ```
 
@@ -68,6 +120,50 @@ Tip:
 
 ```{r Create boxplots}
 #5 
+###FOR ME: mess around with settings to make it look good (esp axis)
+
+#5a: temperature
+temp_box <-
+  ggplot(PetPau.chem.nut,
+         aes(x = factor(month,
+                        levels = 1:12,
+                        labels = month.abb),
+             y = temperature_C,
+             color = lakename)) +
+  geom_boxplot() +
+  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: idk if this is required or necessary?
+
+temp_box
+
+#5b: Total Phosphorous (TP)
+TP_box <-
+  ggplot(PetPau.chem.nut,
+         aes(x = factor(month,
+                        levels = 1:12,
+                        labels = month.abb),
+             y = tp_ug,
+             color = lakename)) +
+  geom_boxplot() +
+  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
+
+TP_box
+
+#5c: Total Nitrogen (TN)
+TN_box <-
+  ggplot(PetPau.chem.nut,
+         aes(x = factor(month,
+                        levels = 1:12,
+                        labels = month.abb),
+             y = tn_ug,
+             color = lakename)) +
+  geom_boxplot() +
+  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
+
+TN_box
+
+######################### LEFT OFF HERE 10/2/23 ##############################
+# Creating a cowplot with all 3 plots.
+plot_grid(temp_box, TP_box, TN_box, nrow = 3, align = 'v', axis = 'l') #so crazy ugly
 
 ```
 
