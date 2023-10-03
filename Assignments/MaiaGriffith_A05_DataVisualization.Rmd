@@ -131,6 +131,7 @@ temp_box <-
              y = temperature_C,
              color = lakename)) +
   geom_boxplot() +
+  #theme(legend.position = "none") +
   scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: idk if this is required or necessary?
 
 temp_box
@@ -144,6 +145,7 @@ TP_box <-
              y = tp_ug,
              color = lakename)) +
   geom_boxplot() +
+ # theme(legend.position = "none") +
   scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
 
 TP_box
@@ -157,13 +159,19 @@ TN_box <-
              y = tn_ug,
              color = lakename)) +
   geom_boxplot() +
+ # theme(legend.position = "none") +
   scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
 
 TN_box
 
-######################### LEFT OFF HERE 10/2/23 ##############################
+#Getting the legend only in cowplot
+legend <- get_legend(
+  # create some space to the left of the legend
+  TN_box + theme(legend.position = "bottom"))
+
 # Creating a cowplot with all 3 plots.
-plot_grid(temp_box, TP_box, TN_box, nrow = 3, align = 'v', axis = 'l') #so crazy ugly
+plot_grid(temp_box, TP_box, TN_box, ncol = 3, align = 'h', axis = 'tb', legend) 
+#so crazy ugly, idk why my graphs don't adjust their size when i adjust the size of the plot pane
 
 ```
 
@@ -176,13 +184,28 @@ Question: What do you observe about the variables of interest over seasons and b
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into three facets rather than separated by color. 
 
 ```{r Plot litter}
-#6
+#6 PLotting subset of Litter by date.
+needles_Q6_plot <- Litter %>%
+  filter(functionalGroup == "Needles") %>% #filtering by Needles
+  ggplot(aes(x = collectDate, #x-axis is date
+             y = dryMass, #y-axis is dry mass of needles
+             color = nlcdClass)) + #separate by NLCD using color
+  geom_point()
+
+needles_Q6_plot
 
 
 #7
+needles_Q7_facet <- Litter %>%
+  filter(functionalGroup == "Needles") %>% #filtering by Needles
+  ggplot(aes(x = collectDate, #x-axis is date
+             y = dryMass)) + #y-axis is dry mass of needles
+  geom_point() +
+  facet_wrap(vars(nlcdClass), nrow = 3)
 
+needles_Q7_facet
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer:
+> Answer: I think the plot for Q7 (`needles_Q7_facet`) is more effective because it allows the viewer to really compare the differences across land cover types very clearly. The plot from Q6 was pretty good, but because of the amount of points it made comparing the drymass per land cover type a bit more difficult, as so many points overlapped each other. Overall, the plot in Q6 was just too busy, so being able to separate them and view each side by side in Q7 was much more useful.
