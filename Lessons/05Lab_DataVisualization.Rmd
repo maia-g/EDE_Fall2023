@@ -40,21 +40,22 @@ The expression function can be used when you want to add mathematical symbols an
 ```{r formatted text}
 
 #Create a plot
+#paste arg is putting things together
 Plot_text <-
 ggplot(data=data.frame(x=0,y=0))+
-  geom_point(aes(x=x,y=y)) +
-  geom_text(
-    x=0,
+  geom_point(aes(x=x,y=y)) + #adding a point to your graph
+  geom_text(    #adding TEXT to your plot
+    x=0, #position in x and y axis where text will be displayed (then text is basically centered around this point)
     y=0.025,
-    label=expression(paste("Mean is ", mu,",", R^{2},'=0.6'))
-    )
+    label=expression(paste("Mean is ", mu,",", R^{2},'=0.6')) #adds "text", mathematical symbols/expressions, "characters", 'numbers'
+    ) #notice there is a SPACE after 'is' which shows up in the plot
 
-#Print the plot
+#Print the plot since we stored the plot as an object
 print(Plot_text)
 
-#Save the plot
+#Save the plot to our output folder
 ggsave(
-  filename = "./Output/Plot_text.jpg",
+  filename = "./Output/Plot_text.jpg", #if you don't have this folder already, it will MAKE this new folder
   plot = Plot_text, 
   height = 4, 
   width = 6, 
@@ -93,18 +94,35 @@ Say we want to plot the number of records each month in the Peter/Paul lakes dat
 
 ```{r Plot the number of records by month}
 #What kind of values are months?
+class(PeterPaul.chem.nutrients$month) #they are integers
 
 #List unique values
+unique(PeterPaul.chem.nutrients$month) #not all months are listed, which can be a problem when you are plotting bc it will not plot months that do not have data associated with them
 
 #Plot how many Lake observations occur each month
+ggplot(PeterPaul.chem.nutrients, aes(x = month)) + #bc month is an integer and not a factor, the months are labeled by month number instead of month name
+  geom_bar()
 
-#Convert month to a factor -- with 12 levels, labelled with month names
+#Convert month to a factor -- with 12 levels, labelled with month names to make plotting better
+#we will call the factor function to change the class (first call the column of the dataset, then the levels, then the labels)
+factor(PeterPaul.chem.nutrients$month, levels = 1:12, labels = month.abb) #month.abb will give you month in abbriviated format
+#this does NOT change out original data, it will just be used when we are plotting
 
 #Try again: Plot how many Lake observations occur each month
+ggplot(PeterPaul.chem.nutrients, 
+       aes(x = factor(PeterPaul.chem.nutrients$month, 
+                      levels = 1:12, labels = month.abb))) +
+  geom_bar() 
+#NOTE: the x-axis is labeled as: factor(PeterPaul.chem.nutrients$month, levels = 1:12, labels = month.abb) AND the missing months are NOT shown in the plot
 
 #Alter to include missing months
+ggplot(PeterPaul.chem.nutrients, 
+       aes(x = factor(month, #don't have to copy whole factor thingy bc we called the dataset in first line of this ggplot()
+                      levels = 1:12, labels = month.abb))) +
+  geom_bar() +
+  scale_x_discrete(name = "Month", drop = FALSE) #This makes the x-axis labeled "Month" and makes sure that month w/o data are NOT dropped
 
-#Tidy up the code
+#Tidy up the code (basically just make it look nicer but I have lots of comments so it's ugly no matter what)
 
 ```
 
@@ -112,6 +130,8 @@ Say we want to plot the number of records each month in the Peter/Paul lakes dat
 ---
 
 ## More on themes
+
+*Links to themes are found in the ppt for this lab section, this will be helpful for A05*
 
 Themes are used to control the overall appearance of a plot, such as the color, size, font, and style of the various elements in the plot. Themes provide a quick and easy way to change the visual style of a plot, and they allow us to create custom visualizations that fit our specific needs and preferences.
 
@@ -128,7 +148,7 @@ Resource:
  * https://ggplot2.tidyverse.org/reference/theme.html
 
 ```{r More on themes}
-#Create a base plot to play with
+#Create a base plot to play with (this has all the default settings)
 surface_temp_1999_plot <- PeterPaul.chem.nutrients %>% 
   filter(depth == 0 & year4 == 1999) %>% 
   ggplot(
@@ -144,9 +164,9 @@ surface_temp_1999_plot
 
 #Apply a theme
 surface_temp_1999_plot + 
-  theme_gray()
+  theme_gray() #this is the default, nothing changes
 
-#Apply a ggtheme
+#Apply a ggtheme, this one is Wall Street Journal
 surface_temp_1999_plot + 
   theme_wsj() + 
   scale_color_wsj()
@@ -154,14 +174,15 @@ surface_temp_1999_plot +
 #Add a title
 surface_temp_1999_plot + 
   ggtitle("Surface temperature, 1999") +
-  labs(color='Lake') + 
+  labs(color='Lake') + #labs can change names for legend, plot title, axis, etc
+  #this labs call changes the legend name to Lake
   theme_wsj()
 ```
 
 
 ```{r Legend Elements}
-#Create a custom theme
-my_theme <- theme_base() + 
+#Create a custom theme (you can call it anything you want)
+my_theme <- theme_base() + #always start with the base
   theme(
     line = element_line(
       color='red',
@@ -225,17 +246,38 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 
 # 1. 
-# Plot surface temperatures by day of  year. 
+# Plot surface temperatures by day of year. 
 # Color your points by year, and facet by lake in two rows.
 # Change the ylab name
 
+surface_temp_plot <- PeterPaul.chem.nutrients %>% #creating a plot object that is using this dataframe
+  filter(depth == 0) %>% #filtering for surface data only
+  ggplot(
+    mapping = #this is so we can do ggplot things in a pipe I THINK
+      aes(x = daynum, #x-axis
+          y = temperature_C, #y-axis
+          color = year4)) + #make points colored by year
+  geom_point() +
+  facet_wrap(vars(lakename), nrow = 2) + #facet lake in two rows
+  labs (y = "Surface Temperature") #change name of y-axis
+
+surface_temp_plot #calling our plot object so we can see it
 
 #2. 
 # Plot temperature by date. Color your points by depth.
 # Change the size of your point to 0.5
 # Change the color palette to magma and play with direction (+- 1), which one makes more sense?
 # Change x axis to include marker/labels every 5 years
+temp_by_date_plot <-
+  ggplot(PeterPaul.chem.nutrients,
+       aes(x = sampledate,
+           y = temperature_C,
+           color = depth)) + #color by depth
+  geom_point(size = 0.5) + #change point size
+  scale_color_viridis(option = "magma", direction = -1) + #magma theme and direction is -1 (basically inverted) to have light colors be closer to surface, dark colors at depth
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") #changing x-axis things
 
+temp_by_date_plot
 
 
 ```
@@ -246,12 +288,19 @@ Exercise: Plot relationships between air quality measurements
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 
 # 3. 
-# Plot AQI values for ozone by PM2.5, colored by latitude 
+# Plot AQI values for ozone (y) by PM2.5 (x), colored by latitude 
 # Make the points 50 % transparent
 # Add a line of best fit for the linear regression of these variables.
 
+aqi_by_lat <-
+  ggplot(EPAair, #calling the dataframe
+         aes(x = PM2.5, #x-variable
+             y = Ozone, #y-variable
+             color = mean_Lat)) +
+  geom_point(alpha = 0.5) + #transparency of points
+  geom_smooth(method = "lm") #using geom_smooth and method = "lm" to create a line of best fit
 
-
+aqi_by_lat
 
 ```
 

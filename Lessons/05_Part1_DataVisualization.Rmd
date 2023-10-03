@@ -79,10 +79,10 @@ Here are some commonly used aesthetic types that can be manipulated in ggplot:
 ### Plotting continuous variables over time: Scatterplot and Line Plot
 
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE} 
-#chaning fig height and width above will make it the default for all plots in this code chunk
+#changing fig height and width above will make it the default for all plots in this code chunk
 
 # Scatterplot
-ggplot(EPAair, aes(x = Date, y = Ozone)) + 
+ggplot(EPAair, aes(x = Date, y = Ozone)) + #this makes the aes the same for all types of plots, if you want a line plot to have diff things than a bar, then you need to have aes within the geom_line or geom_bar, etc
   geom_point() #tell it how to plot OZONE
 
 #doing the same thing as above but in a different way, through creating an object that has all the settings you want, then print the object you created
@@ -92,9 +92,10 @@ print(O3plot)
 
 # Fix this code
 O3plot2 <- ggplot(EPAair) +
-  geom_point(aes(x = Date, y = Ozone, color = "blue"))
+  geom_point(aes(x = Date, y = Ozone, color = "blue")) #if you had color = a column, then it would automatically color code your plot and add a legend automatically
 print(O3plot2)
 #this creates points that are salmon-colored and a legend item called "blue"
+
 #if you want to change this, make sure the color is OUTSIDE the aes command:
 O3plot2 <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone), color = "blue")
