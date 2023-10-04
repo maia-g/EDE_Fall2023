@@ -75,7 +75,8 @@ MG_theme <- theme_base()  +
   theme(
     plot.title = element_text(
       color = 'maroon',
-      size = '14'),
+      size = '14',
+      hjust = 0.5),
     axis.title.x = element_text(
       color = 'maroon'),
     axis.title.y = element_text(
@@ -95,7 +96,6 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 #4 
 
 ###ISSUE: where to find list of best practices
-###FOR ME: mess with colors and stuff, basics of q4 are done
 theme_set(MG_theme)
 
 tp_po4_plot <- 
@@ -105,7 +105,12 @@ tp_po4_plot <-
              color = lakename)) + ### ISSUE: does this count as diff aes for each lake or does it mean to use the aes command twice?
   geom_point() +
   geom_smooth(method = "lm", color = 'black') +
-  xlim(0,45)
+  xlim(0,45) +
+  labs(title = "Total Phosphorous vs Phosphate in Peter and Paul Lakes",
+       x = "Phosphate (PO4)",
+       y = "Total Phosphorous") +
+      # legend.title = "Name of Lake")+ ####ISSUE: How to change the freaking legend title??
+ # theme(legend.title = element_text("Name of Lake"))
   
 tp_po4_plot
 
@@ -132,6 +137,8 @@ temp_box <-
              color = lakename)) +
   geom_boxplot() +
   #theme(legend.position = "none") +
+  labs(title = "Lake Temperature by Month",
+       y = "Temperature (Celcius)") +
   scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: idk if this is required or necessary?
 
 temp_box
@@ -145,6 +152,8 @@ TP_box <-
              y = tp_ug,
              color = lakename)) +
   geom_boxplot() +
+  labs(title = "Total Phosphorous by Month",
+       y = "Total Phosphorous") + ###ISSUE: How to get ug in this? The only example is using expression for geom_text
  # theme(legend.position = "none") +
   scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
 
