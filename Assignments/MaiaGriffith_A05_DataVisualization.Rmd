@@ -82,7 +82,7 @@ MG_theme <- theme_base()  +
     axis.title.y = element_text(
       color = 'maroon'),
     plot.background =   element_rect(
-      fill = 'honeydew'),
+      fill = 'white'),
     legend.position = 'bottom',
     )
 ```
@@ -102,15 +102,14 @@ tp_po4_plot <-
   ggplot(PetPau.chem.nut,
          aes(x = po4,
              y = tp_ug,
-             color = lakename)) + ### ISSUE: does this count as diff aes for each lake or does it mean to use the aes command twice?
+             color = lakename)) +
   geom_point() +
   geom_smooth(method = "lm", color = 'black') +
   xlim(0,45) +
   labs(title = "Total Phosphorous vs Phosphate in Peter and Paul Lakes",
        x = "Phosphate (PO4)",
-       y = "Total Phosphorous") +
-      # legend.title = "Name of Lake")+ ####ISSUE: How to change the freaking legend title??
- # theme(legend.title = element_text("Name of Lake"))
+       y = "Total Phosphorous",
+       color = "Lake Name") 
   
 tp_po4_plot
 
@@ -136,12 +135,15 @@ temp_box <-
              y = temperature_C,
              color = lakename)) +
   geom_boxplot() +
-  #theme(legend.position = "none") +
+  theme(legend.position = "none") +
   labs(title = "Lake Temperature by Month",
-       y = "Temperature (Celcius)") +
-  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: idk if this is required or necessary?
+       y = "Temperature (Celcius)",
+       color = "Lake Name") +
+  scale_x_discrete(name = "Month", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
-temp_box
+legend <- get_legend(temp_box) ########
+temp_box + theme(legend
 
 #5b: Total Phosphorous (TP)
 TP_box <-
@@ -153,9 +155,10 @@ TP_box <-
              color = lakename)) +
   geom_boxplot() +
   labs(title = "Total Phosphorous by Month",
-       y = "Total Phosphorous") + ###ISSUE: How to get ug in this? The only example is using expression for geom_text
- # theme(legend.position = "none") +
-  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
+       y = "Total Phosphorous",
+       color = "Lake Name") +
+  scale_x_discrete(name = "Month", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 TP_box
 
@@ -168,8 +171,11 @@ TN_box <-
              y = tn_ug,
              color = lakename)) +
   geom_boxplot() +
- # theme(legend.position = "none") +
-  scale_x_discrete(name = "Month", drop = FALSE) ###ISSUE: same as above
+  labs(title = "Total Nitrogen by Month",
+       y = "Total Nitrogen",
+       color = "Lake Name") +
+  scale_x_discrete(name = "Month", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 TN_box
 
@@ -179,7 +185,8 @@ legend <- get_legend(
   TN_box + theme(legend.position = "bottom"))
 
 # Creating a cowplot with all 3 plots.
-plot_grid(temp_box, TP_box, TN_box, ncol = 3, align = 'h', axis = 'tb', legend) 
+combo_Q5 <-
+  plot_grid(temp_box, TP_box, TN_box, ncol = 3, align = 'h', axis = 'tb', legend) 
 #so crazy ugly, idk why my graphs don't adjust their size when i adjust the size of the plot pane
 
 ```
@@ -199,10 +206,18 @@ needles_Q6_plot <- Litter %>%
   ggplot(aes(x = collectDate, #x-axis is date
              y = dryMass, #y-axis is dry mass of needles
              color = nlcdClass)) + #separate by NLCD using color
-  geom_point()
+  geom_point() +
+  labs(title = "Dry Mass of Needles in Various Land Cover Types Over Time",
+       y = "Dry Mass",
+       x = "Date Collected",
+       color = "Land Cover Type") +
+  scale_x_date(name = "Date Collected", 
+               date_labels = "%Y-%e-%d", 
+               breaks = unique(Litter$collectDate), 
+               expand = expansion(add = 2)) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 needles_Q6_plot
-
 
 #7
 needles_Q7_facet <- Litter %>%
