@@ -2,9 +2,8 @@
 title: '6 - Part 2: Interactive R Markdown'
 author: Environmental Data Analytics | John Fay & Luana Lima 
 date: "Fall 2023"
-output: pdf_document
-editor_options: 
-  chunk_output_type: console
+output: html_document
+runtime: shiny
 ---
 
 ## Overview
@@ -19,6 +18,7 @@ RMarkdown is a powerful tool for creating dynamic documents that combine code, t
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 #Load packages
 library(tidyverse);library(here);library(lubridate)
+install.packages("htmlwidgets")
 
 #Load data
 nutrient_data <- read.csv(
@@ -77,7 +77,9 @@ the_parameter = 'tp_ug'
 start_year = 1990
 end_year = 2005
 
-#Construct the plot
+#making a function for a plot makes it easier to only plot certain things 
+plot_it <- function(the_parameter, start_year, end_year) {
+    #Construct the plot
 
 my_plot <- nutrient_data %>% 
   filter(year4 > start_year & year4 < end_year) %>% 
@@ -105,6 +107,14 @@ my_plot <- nutrient_data %>%
     guide = guide_colorbar(reverse = T),
     direction = -1)
 
+return(my_plot)
+}
+
+#exmaple of using the function to make a subplot
+
+plot_it('tp_ug',1992,2005)
+
+
 ```
 
 ##Interactive R with Shiny Widgets
@@ -117,8 +127,17 @@ Notice that when you do so, the Knit menu is replaced.
 
 Then we can add the code chunk listed in the document.Before running this code, however, we should set the code chunk options for the previous code chunks so that they are not run (eval) and not shown (echo). 
 
-```{r, echo=FALSE}
+```{r eval=FALSE, include=FALSE}
+numericInput(
+  inputId = "n",
+  label = "How many cars?",
+  value = 5) #this makes variable start at 5
 
+renderPrint(paste("You chose", input$n))
+
+renderTable({
+  head(cars, input$n) 
+})
 ```
 
 Shiny has many other input widgets: https://shiny.rstudio.com/gallery/widget-gallery.html. Below we'll use a Select Box widget to specifiy the variable shown in our plot. We'll also add a slider range to limit the date shown in our plot. 
@@ -126,7 +145,33 @@ Shiny has many other input widgets: https://shiny.rstudio.com/gallery/widget-gal
 Note: Before running this plot, set the previous code chunk to not evaluate
 
 ```{r widget exploration, echo=FALSE}
+selectInput(
+  inputId = "the_parameter", #enter the name of the variable we want
+  label = "Select the parameter to plot", #how it shows up on the screen
+  choices = c('tp_ug', 'tn_ug', 'no23', 'po4'),
+  selected = 'tp_ug'
+)
 
+sliderInput(
+  inputId = "YearSlider",
+  label = "Select the date range",
+  min = 1990,
+  max = 2020,
+  value = c(1995,2000) #the range it starts with on the slider
+)
+
+#renderPrint(input$YearSlider)
+
+
+###This is not working for me.
+renderPlot(
+  plot_it(
+    input$the_parameter,
+)
+  )
+
+    # input$YearsSlider[1],
+    # input$YearsSlider[2]
 ```
 
 
