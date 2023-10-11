@@ -36,6 +36,7 @@ library(tidyverse)
 library(lubridate)
 library(here)
 library(cowplot)
+library(ggthemes)
 
 # Verifying home working directory
 here()
@@ -94,8 +95,6 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r plot total P vs PO4}
 #4 
-
-###ISSUE: where to find list of best practices
 theme_set(MG_theme)
 
 tp_po4_plot <- 
@@ -122,9 +121,8 @@ Tip:
 * Recall the discussion on factors in the previous section as it may be helpful here. 
 * R has a built-in variable called `month.abb` that returns a list of months;see <https://r-lang.com/month-abb-in-r-with-example>
 
-```{r Create boxplots}
+```{r Create boxplots, fig.height=8}
 #5 
-###FOR ME: mess around with settings to make it look good (esp axis)
 
 #5a: temperature
 temp_box <-
@@ -135,15 +133,13 @@ temp_box <-
              y = temperature_C,
              color = lakename)) +
   geom_boxplot() +
-  theme(legend.position = "none") +
   labs(title = "Lake Temperature by Month",
-       y = "Temperature (Celcius)",
+       y = "Temperature (C)",
        color = "Lake Name") +
-  scale_x_discrete(name = "Month", drop = FALSE) +
+  scale_x_discrete(name = "", drop = FALSE) +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
-legend <- get_legend(temp_box) ########
-temp_box + theme(legend
+#temp_box
 
 #5b: Total Phosphorous (TP)
 TP_box <-
@@ -156,11 +152,13 @@ TP_box <-
   geom_boxplot() +
   labs(title = "Total Phosphorous by Month",
        y = "Total Phosphorous",
+       x = "",
        color = "Lake Name") +
-  scale_x_discrete(name = "Month", drop = FALSE) +
-  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
+  scale_x_discrete(name = "", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1),
+        plot.margin = unit(c(1,1,1,1), "cm"))
 
-TP_box
+#TP_box
 
 #5c: Total Nitrogen (TN)
 TN_box <-
@@ -173,34 +171,40 @@ TN_box <-
   geom_boxplot() +
   labs(title = "Total Nitrogen by Month",
        y = "Total Nitrogen",
+       x = "Month",
        color = "Lake Name") +
   scale_x_discrete(name = "Month", drop = FALSE) +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
-TN_box
+#TN_box
 
 #Getting the legend only in cowplot
-legend <- get_legend(
+my_legend <- get_legend(TN_box)
   # create some space to the left of the legend
-  TN_box + theme(legend.position = "bottom"))
+ 
 
 # Creating a cowplot with all 3 plots.
 combo_Q5 <-
-  plot_grid(temp_box, TP_box, TN_box, ncol = 3, align = 'h', axis = 'tb', legend) 
-#so crazy ugly, idk why my graphs don't adjust their size when i adjust the size of the plot pane
+  plot_grid(
+            temp_box + theme(legend.position = "none"), 
+            TP_box + theme(legend.position = "none"),
+            TN_box + theme(legend.position = "bottom"),
+            ncol = 1, nrow = 3, align = 'v', axis = 'l', rel_heights = c(1,1,1.25))
+
+combo_Q5
 
 ```
 
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: 
+> Answer: Temperature has a more clear distribution of cooler in both lakes before summer begins, with increasing temps during the summer months of June, July, and August. Then the temps in both lakes start to decline again heading into fall and winter. The total phosphorous in Paul Lake did not seem to have as big of changes as Peter Lake, especially in July and August. Similarly, the Nitrogen content of Peter Lake had larger variation and higher values than Paul Lake throughout the months.
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into three facets rather than separated by color. 
 
 ```{r Plot litter}
-#6 PLotting subset of Litter by date.
+#6 Plotting subset of Litter by date.
 needles_Q6_plot <- Litter %>%
   filter(functionalGroup == "Needles") %>% #filtering by Needles
   ggplot(aes(x = collectDate, #x-axis is date
@@ -208,14 +212,15 @@ needles_Q6_plot <- Litter %>%
              color = nlcdClass)) + #separate by NLCD using color
   geom_point() +
   labs(title = "Dry Mass of Needles in Various Land Cover Types Over Time",
-       y = "Dry Mass",
+       y = "Dry Mass (g)",
        x = "Date Collected",
        color = "Land Cover Type") +
-  scale_x_date(name = "Date Collected", 
-               date_labels = "%Y-%e-%d", 
-               breaks = unique(Litter$collectDate), 
-               expand = expansion(add = 2)) +
-  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
+  scale_x_date(name = "Date Collected",
+               date_labels = "%Y",
+               breaks = unique(Litter$collectDate)) +
+  theme(axis.text.x = element_text(angle = 45,  
+                                   hjust = 1,
+                                   size = 10)) 
 
 needles_Q6_plot
 
@@ -225,6 +230,16 @@ needles_Q7_facet <- Litter %>%
   ggplot(aes(x = collectDate, #x-axis is date
              y = dryMass)) + #y-axis is dry mass of needles
   geom_point() +
+  labs(title = "Dry Mass of Needles in Various Land Cover Types Over Time",
+       y = "Dry Mass (g)",
+       x = "Date Collected",
+       color = "Land Cover Type") +
+  scale_x_date(name = "Date Collected",
+               date_labels = "%Y",
+               breaks = unique(Litter$collectDate)) +
+  theme(axis.text.x = element_text(angle = 45,  
+                                   hjust = 1,
+                                   size = 8)) + 
   facet_wrap(vars(nlcdClass), nrow = 3)
 
 needles_Q7_facet
