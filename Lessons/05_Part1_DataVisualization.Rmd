@@ -8,6 +8,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+\listoffigures
+#autogenerates a list of figures and the page number
+
+\newpage 
+#generates a new break to separate images and code etc
+
 ## Objectives
 1. Perform simple data visualizations in the R package `ggplot`
 2. Develop skills to adjust aesthetics and layers in graphs
@@ -78,7 +84,7 @@ Here are some commonly used aesthetic types that can be manipulated in ggplot:
 
 ### Plotting continuous variables over time: Scatterplot and Line Plot
 
-```{r, fig.height = 3, fig.width = 4, warning = FALSE} 
+```{r, fig.height = 3, fig.width = 4, warning = FALSE, fig.cap = "Scatterplot"} 
 #changing fig height and width above will make it the default for all plots in this code chunk
 
 # Scatterplot
@@ -138,7 +144,7 @@ print(PMplot.line)
 
 ### Plotting the relationship between two continuous variables: Scatterplot
 
-```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+```{r, fig.height = 3, fig.width = 4, warning = FALSE, fig.cap = "Another Scatterplot"}
 # Scatterplot with two vars (not date)
 lightvsDO <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +

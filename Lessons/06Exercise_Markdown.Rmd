@@ -5,11 +5,14 @@ output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
+toc: true
 ---
+\listoftables
 
 ## Set up the coding environment
 
-```{r setup}
+```{r setup, warning=FALSE, echo=FALSE}
+knitr::opts_chunk$set(include = FALSE) #this is the same as adding a r-chunk command within the {}
 #Load packages
 library(tidyverse);library(here);library(lubridate)
 
@@ -22,6 +25,10 @@ nutrient_data_raw <- read.csv(
 nutrient_data_raw$sampledate = ymd(nutrient_data_raw$sampledate)
 
 ```
+
+The raw daaset has `r nrow(nutrient_data_raw)` rows and `r ncol(nutrient_data_raw)` columns.
+
+^That spits out the numnber of rows and columns from that table. Basically running code within rmd file.
 
 ## Wrangle the data
 
@@ -43,4 +50,20 @@ nutrient_data_tn <- nutrient_data %>%
   )
 ```
 
+\newpage
+
 ## Report the summary
+
+```{r kable command, echo=FALSE}
+#kable command doesnt always make it look perfect
+nutrient_data_tn 
+#when you knit this it doesnt actually look like a good table
+
+knitr::kable(nutrient_data_tn)
+#this spits out what looks like a table format in Rmd
+#there are still weird names but looks way better
+
+knitr::kable(nutrient_data_tn, caption = "Summary of Total Nitrogen") 
+#assigns a table number plus the caption (looks kinda like a title)
+```
+
