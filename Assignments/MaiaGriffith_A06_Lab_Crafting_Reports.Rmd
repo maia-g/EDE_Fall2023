@@ -31,8 +31,8 @@ Using markdown, create a table beneath the `Table: EPA Air Quality` line below t
 Table: EPA Air Quality
 
 |Item | Value|
------|------
-|Source| EPA Aur Quality System (AQS)|
+|:-----|------:|
+|Source| EPA Air Quality System (AQS)|
 |Date| 2018-2019|
 |Filename | EPAair_O3_PM25_NC1819_Processed.csv|
 
@@ -67,6 +67,7 @@ Customize the chunk options such that the code is run but is not displayed in th
 >
 > -   If your output table spans across two pages, try inserting a page break in the markdown just before your code chunk.
 
+\newpage
 
 ```{r data.summary, echo=FALSE}
 #Compute mean PM2.5 concentration for each county, sorted by value
@@ -107,7 +108,7 @@ knitr::kable(
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
-```{r Ozone 2018, echo=FALSE, fig.height = 3, fig.width = 4, fig.align='left', fig.cap= 'Ozone Levels by Month (2018)'}
+```{r Ozone 2018, echo=FALSE, warning=FALSE, fig.height = 4.5, fig.width = 6, fig.align='left', fig.cap= 'Ozone Levels by Month (2018)'}
 Oz18_plot <-
   epa_data %>%
   filter(Year == 2018) %>% #Only want 2018 records
@@ -116,17 +117,15 @@ Oz18_plot <-
                         labels = month.abb),
              y = Ozone)) +
   geom_boxplot() +
-  labs(title = "Ozone Levels by Month (2018)", ####Plot title, maybe don't need this with the fig.cap
-       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+  labs(y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
        x = "Month") +
   scale_x_discrete(name = "Month", drop = FALSE) +
-  theme(axis.text.x = element_text(angle = 45,  hjust = 1),
-        plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 Oz18_plot
 ```
 
-```{r Ozone 2019, echo=FALSE, fig.height = 3, fig.width = 4, fig.align= 'left', fig.cap= 'Ozone Levels by Month (2018)'}
+```{r Ozone 2019, echo=FALSE, warning=FALSE, fig.height = 4.5, fig.width = 6, fig.align= 'left', fig.cap= 'Ozone Levels by Month (2019)'}
 Oz19_plot <-
   epa_data %>%
   filter(Year == 2019) %>% #Only want 2019 records
@@ -135,12 +134,10 @@ Oz19_plot <-
                         labels = month.abb),
              y = Ozone)) +
   geom_boxplot() +
-  labs(title = "Ozone Levels by Month (2019)", #Plot title
-       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+  labs(y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
        x = "Month") +
   scale_x_discrete(name = "Month", drop = FALSE) +
-  theme(axis.text.x = element_text(angle = 45,  hjust = 1),
-        plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 Oz19_plot
 
