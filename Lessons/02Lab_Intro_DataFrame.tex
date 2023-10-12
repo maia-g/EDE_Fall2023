@@ -1,0 +1,732 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Intro to Data Frames in R},
+  pdfauthor={Luana Lima},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Intro to Data Frames in R}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Environmental Data Analytics}
+\author{Luana Lima}
+\date{Fall 2023}
+
+\begin{document}
+\maketitle
+
+\hypertarget{data-frame-definition}{%
+\subsection{Data frame definition}\label{data-frame-definition}}
+
+A \textbf{data frame} is used for storing data tables. It a list a
+vector of equal length.
+
+When we import data to R, data frame is the preferred way for storing
+the data because columns can have different modes (character, numeric,
+integer, logical, complex).
+
+\hypertarget{data-frame-built-in-example}{%
+\subsection{Data frame built-in
+example}\label{data-frame-built-in-example}}
+
+Let's look into a built-in data frame from package ``datasets'' - cars.
+The data give the speed of cars and the distances taken to stop.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cars}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    speed dist
+## 1      4    2
+## 2      4   10
+## 3      7    4
+## 4      7   22
+## 5      8   16
+## 6      9   10
+## 7     10   18
+## 8     10   26
+## 9     10   34
+## 10    11   17
+## 11    11   28
+## 12    12   14
+## 13    12   20
+## 14    12   24
+## 15    12   28
+## 16    13   26
+## 17    13   34
+## 18    13   34
+## 19    13   46
+## 20    14   26
+## 21    14   36
+## 22    14   60
+## 23    14   80
+## 24    15   20
+## 25    15   26
+## 26    15   54
+## 27    16   32
+## 28    16   40
+## 29    17   32
+## 30    17   40
+## 31    17   50
+## 32    18   42
+## 33    18   56
+## 34    18   76
+## 35    18   84
+## 36    19   36
+## 37    19   46
+## 38    19   68
+## 39    20   32
+## 40    20   48
+## 41    20   52
+## 42    20   56
+## 43    20   64
+## 44    22   66
+## 45    23   54
+## 46    24   70
+## 47    24   92
+## 48    24   93
+## 49    24  120
+## 50    25   85
+\end{verbatim}
+
+Note that it has 2 columns and 50 rows.
+
+\hypertarget{data-frame-columns}{%
+\subsection{Data frame columns}\label{data-frame-columns}}
+
+Suppose you want just the column speed. How would you access that data?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cars}\SpecialCharTok{$}\NormalTok{speed }\CommentTok{\#syntax to pull one column is \textless{}chartname\textgreater{}$\textless{}columnname\textgreater{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  4  4  7  7  8  9 10 10 10 11 11 12 12 12 12 13 13 13 13 14 14 14 14 15 15
+## [26] 15 16 16 17 17 17 18 18 18 18 19 19 19 20 20 20 20 20 22 23 24 24 24 24 25
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mtcars}\SpecialCharTok{$}\NormalTok{cyl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4
+\end{verbatim}
+
+How would you store it on another object?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{car\_speed }\OtherTok{\textless{}{-}}\NormalTok{ cars}\SpecialCharTok{$}\NormalTok{speed}
+\NormalTok{car\_speed}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  4  4  7  7  8  9 10 10 10 11 11 12 12 12 12 13 13 13 13 14 14 14 14 15 15
+## [26] 15 16 16 17 17 17 18 18 18 18 19 19 19 20 20 20 20 20 22 23 24 24 24 24 25
+\end{verbatim}
+
+\hypertarget{transforming-object-in-a-data-frame}{%
+\subsection{Transforming object in a data
+frame}\label{transforming-object-in-a-data-frame}}
+
+Is the new object you create a data frame?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Option 1}
+\FunctionTok{class}\NormalTok{(car\_speed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "numeric"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Option 2}
+\FunctionTok{is.vector}\NormalTok{(car\_speed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+How could you make it a data frame?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_car\_speed }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(car\_speed) }\CommentTok{\#taking vector and treating it as data frame}
+\NormalTok{df\_car\_speed}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    car_speed
+## 1          4
+## 2          4
+## 3          7
+## 4          7
+## 5          8
+## 6          9
+## 7         10
+## 8         10
+## 9         10
+## 10        11
+## 11        11
+## 12        12
+## 13        12
+## 14        12
+## 15        12
+## 16        13
+## 17        13
+## 18        13
+## 19        13
+## 20        14
+## 21        14
+## 22        14
+## 23        14
+## 24        15
+## 25        15
+## 26        15
+## 27        16
+## 28        16
+## 29        17
+## 30        17
+## 31        17
+## 32        18
+## 33        18
+## 34        18
+## 35        18
+## 36        19
+## 37        19
+## 38        19
+## 39        20
+## 40        20
+## 41        20
+## 42        20
+## 43        20
+## 44        22
+## 45        23
+## 46        24
+## 47        24
+## 48        24
+## 49        24
+## 50        25
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{class}\NormalTok{(df\_car\_speed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "data.frame"
+\end{verbatim}
+
+\hypertarget{adding-columns-to-a-data-frame}{%
+\subsection{Adding columns to a data
+frame}\label{adding-columns-to-a-data-frame}}
+
+How could you add columns to \emph{df\_car\_speed}?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{car\_dist }\OtherTok{\textless{}{-}}\NormalTok{ cars}\SpecialCharTok{$}\NormalTok{dist }\CommentTok{\#creating new variable}
+
+\CommentTok{\#Option 1}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(df\_car\_speed,car\_dist)  }\CommentTok{\#similarly rows could be added using rbind(), binding columns creates a dataframe}
+\FunctionTok{class}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "data.frame"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    car_speed car_dist
+## 1          4        2
+## 2          4       10
+## 3          7        4
+## 4          7       22
+## 5          8       16
+## 6          9       10
+## 7         10       18
+## 8         10       26
+## 9         10       34
+## 10        11       17
+## 11        11       28
+## 12        12       14
+## 13        12       20
+## 14        12       24
+## 15        12       28
+## 16        13       26
+## 17        13       34
+## 18        13       34
+## 19        13       46
+## 20        14       26
+## 21        14       36
+## 22        14       60
+## 23        14       80
+## 24        15       20
+## 25        15       26
+## 26        15       54
+## 27        16       32
+## 28        16       40
+## 29        17       32
+## 30        17       40
+## 31        17       50
+## 32        18       42
+## 33        18       56
+## 34        18       76
+## 35        18       84
+## 36        19       36
+## 37        19       46
+## 38        19       68
+## 39        20       32
+## 40        20       48
+## 41        20       52
+## 42        20       56
+## 43        20       64
+## 44        22       66
+## 45        23       54
+## 46        24       70
+## 47        24       92
+## 48        24       93
+## 49        24      120
+## 50        25       85
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Or Option 2 {-} transform into a data frame before binding}
+\NormalTok{df\_car\_dist }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(car\_dist)  }\CommentTok{\#op2}
+\NormalTok{df\_opt2 }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(df\_car\_speed,df\_car\_dist)}
+\FunctionTok{class}\NormalTok{(df\_opt2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "data.frame"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_opt2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    car_speed car_dist
+## 1          4        2
+## 2          4       10
+## 3          7        4
+## 4          7       22
+## 5          8       16
+## 6          9       10
+## 7         10       18
+## 8         10       26
+## 9         10       34
+## 10        11       17
+## 11        11       28
+## 12        12       14
+## 13        12       20
+## 14        12       24
+## 15        12       28
+## 16        13       26
+## 17        13       34
+## 18        13       34
+## 19        13       46
+## 20        14       26
+## 21        14       36
+## 22        14       60
+## 23        14       80
+## 24        15       20
+## 25        15       26
+## 26        15       54
+## 27        16       32
+## 28        16       40
+## 29        17       32
+## 30        17       40
+## 31        17       50
+## 32        18       42
+## 33        18       56
+## 34        18       76
+## 35        18       84
+## 36        19       36
+## 37        19       46
+## 38        19       68
+## 39        20       32
+## 40        20       48
+## 41        20       52
+## 42        20       56
+## 43        20       64
+## 44        22       66
+## 45        23       54
+## 46        24       70
+## 47        24       92
+## 48        24       93
+## 49        24      120
+## 50        25       85
+\end{verbatim}
+
+Note that when we transformed the vector in a data frame the name of the
+vector became the column name.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{colnames}\NormalTok{(df)  }\CommentTok{\#or simply names() they do the same thing}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "car_speed" "car_dist"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "car_speed" "car_dist"
+\end{verbatim}
+
+\hypertarget{creating-a-data-frame}{%
+\subsection{Creating a data frame}\label{creating-a-data-frame}}
+
+How would you create a data frame?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#useful function data.frame()}
+\NormalTok{create\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\StringTok{"speed"}\OtherTok{=}\NormalTok{car\_speed,}\StringTok{"dist"}\OtherTok{=}\NormalTok{car\_dist)}
+\NormalTok{create\_df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    speed dist
+## 1      4    2
+## 2      4   10
+## 3      7    4
+## 4      7   22
+## 5      8   16
+## 6      9   10
+## 7     10   18
+## 8     10   26
+## 9     10   34
+## 10    11   17
+## 11    11   28
+## 12    12   14
+## 13    12   20
+## 14    12   24
+## 15    12   28
+## 16    13   26
+## 17    13   34
+## 18    13   34
+## 19    13   46
+## 20    14   26
+## 21    14   36
+## 22    14   60
+## 23    14   80
+## 24    15   20
+## 25    15   26
+## 26    15   54
+## 27    16   32
+## 28    16   40
+## 29    17   32
+## 30    17   40
+## 31    17   50
+## 32    18   42
+## 33    18   56
+## 34    18   76
+## 35    18   84
+## 36    19   36
+## 37    19   46
+## 38    19   68
+## 39    20   32
+## 40    20   48
+## 41    20   52
+## 42    20   56
+## 43    20   64
+## 44    22   66
+## 45    23   54
+## 46    24   70
+## 47    24   92
+## 48    24   93
+## 49    24  120
+## 50    25   85
+\end{verbatim}
+
+\hypertarget{data-frame-functions}{%
+\subsection{Data frame functions}\label{data-frame-functions}}
+
+Some useful functions to use with data frames.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ncol}\NormalTok{(df)  }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{nrow}\NormalTok{(df)  }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 50
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{length}\NormalTok{(df)  }\CommentTok{\#same as ncol}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(df) }\CommentTok{\#creates summary stats of the dataset, helpful for exploring data quickly}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    car_speed       car_dist     
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(df,}\DecValTok{6}\NormalTok{) }\CommentTok{\#show the first 6 rows of df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   car_speed car_dist
+## 1         4        2
+## 2         4       10
+## 3         7        4
+## 4         7       22
+## 5         8       16
+## 6         9       10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#If you know the number of the column you want you can refer to that to access column}
+\NormalTok{df[,}\DecValTok{1}\NormalTok{] }\CommentTok{\#this is called Matrix Notation, specify the [row,col], if no row entered it will give you ALL of them}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  4  4  7  7  8  9 10 10 10 11 11 12 12 12 12 13 13 13 13 14 14 14 14 15 15
+## [26] 15 16 16 17 17 17 18 18 18 18 19 19 19 20 20 20 20 20 22 23 24 24 24 24 25
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\DecValTok{1}\NormalTok{,] }\CommentTok{\#this will give you all columns for row 1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   car_speed car_dist
+## 1         4        2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{,}\DecValTok{2}\NormalTok{] }\CommentTok{\#get rows 1 thorugh 10 in column 2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  2 10  4 22 16 10 18 26 34 17
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{),] }\CommentTok{\#create a matrix, c() calls a VECTOR to get multiple rows}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   car_speed car_dist
+## 1         4        2
+## 2         4       10
+## 3         7        4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{),]}\SpecialCharTok{$}\NormalTok{car\_speed }\CommentTok{\#if you don\textquotesingle{}t know what NUMBER of col, you can use the $\textless{}name\textgreater{} to call the correct column}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4 4 7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#you could also use this notation to delete columns}
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df[,}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{]}
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  4  4  7  7  8  9 10 10 10 11 11 12 12 12 12 13 13 13 13 14 14 14 14 15 15
+## [26] 15 16 16 17 17 17 18 18 18 18 19 19 19 20 20 20 20 20 22 23 24 24 24 24 25
+\end{verbatim}
+
+\end{document}

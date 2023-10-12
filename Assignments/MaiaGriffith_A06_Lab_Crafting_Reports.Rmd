@@ -3,6 +3,9 @@ title: 'A06 - Crafting Reports'
 author: "Maia Griffith" 
 date: "Fall 2023"
 output: pdf_document
+toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Objectives:
@@ -27,6 +30,11 @@ Using markdown, create a table beneath the `Table: EPA Air Quality` line below t
 
 Table: EPA Air Quality
 
+|Item | Value|
+-----|------
+|Source| EPA Aur Quality System (AQS)|
+|Date| 2018-2019|
+|Filename | EPAair_O3_PM25_NC1819_Processed.csv|
 
 ---
 
@@ -36,7 +44,7 @@ Set the following R code chunk so that it runs when knit, but no messages, error
 
 ```{r project.setup, echo=TRUE, message=FALSE, warning=FALSE}
 #Import libraries
-library(tidyverse);library(lubridate);library(here);library(knitr)
+library(tidyverse);library(lubridate);library(here);library(knitr);library(tinytex)
 
 #Import EPA data (from the processed_KEY folder) & fix dates
 epa_data <- read.csv(
@@ -60,7 +68,7 @@ Customize the chunk options such that the code is run but is not displayed in th
 > -   If your output table spans across two pages, try inserting a page break in the markdown just before your code chunk.
 
 
-```{r data.summary}
+```{r data.summary, echo=FALSE}
 #Compute mean PM2.5 concentration for each county, sorted by value
 summary_PM25 <- epa_data %>% 
   drop_na(PM2.5) %>% 
@@ -78,6 +86,19 @@ summary_Ozone <- epa_data %>%
 
 #Use the `kable` function to produce the 2 tables in markdown format
 
+#Making PM2.5 table
+knitr::kable(
+  summary_PM25, 
+  caption = "Mean Particulates (2.5mm)",
+  col.names = c("County", "$\\mu g/m^3$")
+  ) 
+
+#Making Ozone table
+knitr::kable(
+  summary_Ozone, 
+  caption = "Mean Ozone",
+  col.names = c("County", "$\\mu g/m^3$")
+  ) 
 ```
 
 ---
@@ -86,7 +107,44 @@ summary_Ozone <- epa_data %>%
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r Ozone 2018, echo=FALSE, fig.height = 3, fig.width = 4, fig.align='left', fig.cap= 'Ozone Levels by Month (2018)'}
+Oz18_plot <-
+  epa_data %>%
+  filter(Year == 2018) %>% #Only want 2018 records
+  ggplot(aes(x = factor(Month,
+                        levels = 1:12, #make sure 12 box plots
+                        labels = month.abb),
+             y = Ozone)) +
+  geom_boxplot() +
+  labs(title = "Ozone Levels by Month (2018)", ####Plot title, maybe don't need this with the fig.cap
+       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+       x = "Month") +
+  scale_x_discrete(name = "Month", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1),
+        plot.title = element_text(hjust = 0.5))
 
+Oz18_plot
+```
+
+```{r Ozone 2019, echo=FALSE, fig.height = 3, fig.width = 4, fig.align= 'left', fig.cap= 'Ozone Levels by Month (2018)'}
+Oz19_plot <-
+  epa_data %>%
+  filter(Year == 2019) %>% #Only want 2019 records
+  ggplot(aes(x = factor(Month,
+                        levels = 1:12, #make sure 12 box plots
+                        labels = month.abb),
+             y = Ozone)) +
+  geom_boxplot() +
+  labs(title = "Ozone Levels by Month (2019)", #Plot title
+       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+       x = "Month") +
+  scale_x_discrete(name = "Month", drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+
+Oz19_plot
+
+```
 
 ---
 \newpage

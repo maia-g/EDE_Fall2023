@@ -77,6 +77,16 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -113,6 +123,10 @@
 \begin{document}
 \maketitle
 
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
 \hypertarget{objectives}{%
 \subsection{Objectives:}\label{objectives}}
 
@@ -170,7 +184,22 @@ Quality System (AQS)'', ``2018-2019'', and
 ``EPAair\_O3\_PM25\_NC1819\_Processed.csv''. The first column should be
 aligned to the right and the second to the left.
 
-Table: EPA Air Quality
+\begin{longtable}[]{@{}ll@{}}
+\caption{EPA Air Quality}\tabularnewline
+\toprule\noalign{}
+Item & Value \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Item & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Source & EPA Aur Quality System (AQS) \\
+Date & 2018-2019 \\
+Filename & EPAair\_O3\_PM25\_NC1819\_Processed.csv \\
+\end{longtable}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -185,7 +214,7 @@ should be displayed.
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\#Import libraries}
-\FunctionTok{library}\NormalTok{(tidyverse);}\FunctionTok{library}\NormalTok{(lubridate);}\FunctionTok{library}\NormalTok{(here);}\FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(tidyverse);}\FunctionTok{library}\NormalTok{(lubridate);}\FunctionTok{library}\NormalTok{(here);}\FunctionTok{library}\NormalTok{(knitr);}\FunctionTok{library}\NormalTok{(tinytex)}
 
 \CommentTok{\#Import EPA data (from the processed\_KEY folder) \& fix dates}
 \NormalTok{epa\_data }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}
@@ -224,26 +253,57 @@ displayed.
 \end{itemize}
 \end{quote}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#Compute mean PM2.5 concentration for each county, sorted by value}
-\NormalTok{summary\_PM25 }\OtherTok{\textless{}{-}}\NormalTok{ epa\_data }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{drop\_na}\NormalTok{(PM2}\FloatTok{.5}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{group\_by}\NormalTok{(COUNTY) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{mean\_PM2.5 =} \FunctionTok{mean}\NormalTok{(PM2}\FloatTok{.5}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{arrange}\NormalTok{(mean\_PM2}\FloatTok{.5}\NormalTok{)}
+\begin{longtable}[]{@{}lr@{}}
+\caption{Mean Particulates (2.5mm)}\tabularnewline
+\toprule\noalign{}
+County & \(\mu g/m^3\) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+County & \(\mu g/m^3\) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Haywood & 13.98400 \\
+New Hanover & 15.60681 \\
+Avery & 18.27941 \\
+Edgecombe & 26.06503 \\
+Pitt & 27.37166 \\
+Guilford & 29.14163 \\
+Swain & 30.62780 \\
+Johnston & 33.02695 \\
+Durham & 33.53770 \\
+Mecklenburg & 33.63038 \\
+Forsyth & 35.09282 \\
+Wake & 37.45423 \\
+\end{longtable}
 
-\CommentTok{\#Compute mean ozone concentration for each county, sorted by value}
-\NormalTok{summary\_Ozone }\OtherTok{\textless{}{-}}\NormalTok{ epa\_data }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{drop\_na}\NormalTok{(Ozone) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{group\_by}\NormalTok{(COUNTY) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{summarize}\NormalTok{(}
-    \AttributeTok{mean\_Ozone =} \FunctionTok{mean}\NormalTok{(Ozone)) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{arrange}\NormalTok{(mean\_Ozone)}
-
-\CommentTok{\#Use the \textasciigrave{}kable\textasciigrave{} function to produce the 2 tables in markdown format}
-\end{Highlighting}
-\end{Shaded}
+\begin{longtable}[]{@{}lr@{}}
+\caption{Mean Ozone}\tabularnewline
+\toprule\noalign{}
+County & \(\mu g/m^3\) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+County & \(\mu g/m^3\) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Swain & 35.58367 \\
+Avery & 38.39308 \\
+Wake & 38.61345 \\
+New Hanover & 39.11688 \\
+Edgecombe & 39.22154 \\
+Johnston & 40.33849 \\
+Mecklenburg & 40.45746 \\
+Durham & 40.69882 \\
+Pitt & 41.64147 \\
+Forsyth & 44.02352 \\
+Haywood & 44.75049 \\
+Guilford & 45.86681 \\
+\end{longtable}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -258,6 +318,28 @@ figures. In addition, align the plots on the left side of the page and
 set the figure heights so both plots fit on the same page with minimal
 space remaining. Lastly, add a \texttt{fig.cap} chunk option to add a
 caption (title) to your plot that will display underneath the figure.
+
+\begin{verbatim}
+## Warning: Removed 1199 rows containing non-finite values (`stat_boxplot()`).
+\end{verbatim}
+
+\begin{figure}
+
+\includegraphics{MaiaGriffith_A06_Lab_Crafting_Reports_files/figure-latex/Ozone 2018-1} \hfill{}
+
+\caption{Ozone Levels by Month (2018)}\label{fig:Ozone 2018}
+\end{figure}
+
+\begin{verbatim}
+## Warning: Removed 947 rows containing non-finite values (`stat_boxplot()`).
+\end{verbatim}
+
+\begin{figure}
+
+\includegraphics{MaiaGriffith_A06_Lab_Crafting_Reports_files/figure-latex/Ozone 2019-1} \hfill{}
+
+\caption{Ozone Levels by Month (2018)}\label{fig:Ozone 2019}
+\end{figure}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
