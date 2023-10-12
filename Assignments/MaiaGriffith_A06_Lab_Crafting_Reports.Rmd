@@ -31,7 +31,7 @@ Using markdown, create a table beneath the `Table: EPA Air Quality` line below t
 Table: EPA Air Quality
 
 |Item | Value|
-|:-----|------:|
+|-----:|:------|
 |Source| EPA Air Quality System (AQS)|
 |Date| 2018-2019|
 |Filename | EPAair_O3_PM25_NC1819_Processed.csv|
@@ -108,7 +108,7 @@ knitr::kable(
 
 Create two separate code chunks that create boxplots of the distribution of Ozone levels by month using, one for only records collected in 2018 and one for records in 2019. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, align the plots on the left side of the page and set the figure heights so both plots fit on the same page with minimal space remaining. Lastly, add a `fig.cap` chunk option to add a caption (title) to your plot that will display underneath the figure.
 
-```{r Ozone 2018, echo=FALSE, warning=FALSE, fig.height = 4.5, fig.width = 6, fig.align='left', fig.cap= 'Ozone Levels by Month (2018)'}
+```{r Ozone 2018, echo=FALSE, warning=FALSE, fig.height = 4, fig.width = 6, fig.align='left', fig.cap= 'Monthly Ozone, 2018'}
 Oz18_plot <-
   epa_data %>%
   filter(Year == 2018) %>% #Only want 2018 records
@@ -117,7 +117,8 @@ Oz18_plot <-
                         labels = month.abb),
              y = Ozone)) +
   geom_boxplot() +
-  labs(y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+  labs(title = "Recorded Ozone by Month (2018)",
+       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
        x = "Month") +
   scale_x_discrete(name = "Month", drop = FALSE) +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
@@ -125,7 +126,7 @@ Oz18_plot <-
 Oz18_plot
 ```
 
-```{r Ozone 2019, echo=FALSE, warning=FALSE, fig.height = 4.5, fig.width = 6, fig.align= 'left', fig.cap= 'Ozone Levels by Month (2019)'}
+```{r Ozone 2019, echo=FALSE, warning=FALSE, fig.height = 4, fig.width = 6, fig.align= 'left', fig.cap= 'Monthly Ozone, 2019'}
 Oz19_plot <-
   epa_data %>%
   filter(Year == 2019) %>% #Only want 2019 records
@@ -134,7 +135,8 @@ Oz19_plot <-
                         labels = month.abb),
              y = Ozone)) +
   geom_boxplot() +
-  labs(y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
+  labs(title = "Recorded Ozone by Month (2019)",
+       y =expression(paste("Ozone ","(", mu, g/m^{3}, ")")), #Making the symbols
        x = "Month") +
   scale_x_discrete(name = "Month", drop = FALSE) +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
@@ -150,4 +152,4 @@ Oz19_plot
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository. 
 
 ## Git Repository
-
+https://github.com/maia-g/EDE_Fall2023
