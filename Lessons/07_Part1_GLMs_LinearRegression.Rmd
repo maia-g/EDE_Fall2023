@@ -38,7 +38,7 @@ If multiple explanatory variables are chosen, they may be analyzed with respect 
 The GLM is based on the assumption that the data residuals approximate a normal distribution (or a linearly transformed normal distribution). We will discuss the non-parametric analogues to several of these tests if the assumptions of normality are violated. For tests that analyze categorical explanatory variables, the assumption is that the variance in the response variable is equal among groups. Note: environmental data often violate the assumptions of normality and equal variance, and we will often proceed with a GLM even if these assumptions are violated. In this situation, justifying the decision to proceed with a linear model must be made.
 
 ## Set up
-```{r, message = FALSE}
+```{r message=FALSE}
 library(tidyverse)
 options(scipen = 4)
 library(here)
@@ -54,7 +54,7 @@ theme_set(mytheme)
 ```
 
 ## Linear Regression
-A linear regression is comprised of a continuous response variable, plus a combination of 1+ continuous response variables (plus the error term). The deterministic portion of the equation describes the response variable as lying on a straight line, with an intercept and a slope term. The equation is thus a typical algebraic expression: 
+A linear regression is comprised of a continuous response variable (y), plus a combination of 1+ continuous response variables (plus the error term). The deterministic portion of the equation describes the response variable as lying on a straight line, with an intercept and a slope term. The equation is thus a typical algebraic expression: 
 $$ y = \alpha + \beta*x + \epsilon $$
 
 The goal for the linear regression is to find a **line of best fit**, which is the line drawn through the bivariate space that minimizes the total distance of points from the line. This is also called a "least squares" regression. The remainder of the variance not explained by the model is called the **residual error.** 
@@ -69,13 +69,15 @@ Whether or not we care about the result of each of these tested hypotheses will 
 Important components of the linear regression are the correlation and the R-squared value. The **correlation** is a number between -1 and 1, describing the relationship between the variables. Correlations close to -1 represent strong negative correlations, correlations close to zero represent weak correlations, and correlations close to 1 represent strong positive correlations. The **R-squared value** is the correlation squared, becoming a number between 0 and 1. The R-squared value describes the percent of variance accounted for by the explanatory variables. 
 
 ## Simple Linear Regression
+One variable of left (y) one variable on right (x).
 
 For the NTL-LTER dataset, can we predict irradiance (light level) from depth?
 
 ```{r}
+#function lm is linear regression, needs to provide it with dependent variable (y) and independent var (x)
 irradiance.regression <- 
   lm(PeterPaul.chem.nutrients$irradianceWater ~ 
-       PeterPaul.chem.nutrients$depth)
+       PeterPaul.chem.nutrients$depth) 
 
 # another way to format the lm() function
 irradiance.regression <- lm(
@@ -85,10 +87,11 @@ summary(irradiance.regression)
 
 # Correlation
 cor.test(PeterPaul.chem.nutrients$irradianceWater, PeterPaul.chem.nutrients$depth)
+#there is s strong negative correlation between irradiance and depth
 ```
 Question: How would you report the results of this test (overall findings and report of statistical output)?
 
->  
+>  There is a strong negative correlation between irradiance and depth. Also see paragraph below.
 
 So, we see there is a significant negative correlation between irradiance and depth (lower light levels at greater depths), and that this model explains about 31 % of the total variance in irradiance. Let's visualize this relationship and the model itself. 
 
@@ -96,15 +99,15 @@ An exploratory option to visualize the model fit is to use the function `plot`. 
 
 1. **Residuals vs. Fitted.** The value predicted by the line of best fit is the fitted value, and the residual is the distance of that actual value from the predicted value. By definition, there will be a balance of positive and negative residuals. Watch for drastic asymmetry from side to side or a marked departure from zero for the red line - these are signs of a poor model fit.
 
-2. **Normal Q-Q.** The points should fall close to the 1:1 line. We often see departures from 1:1 at the high and low ends of the dataset, which could be outliers. 
+2. **Normal Q-Q.** This is comparing a distribution with a normal distribution. The points should fall close to the 1:1 line. We often see departures from 1:1 at the high and low ends of the dataset, which could be outliers. 
 
 3. **Scale-Location.** Similar to the residuals vs. fitted graph, this will graph the squared standardized residuals by the fitted values. 
 
 4. **Residuals vs. Leverage.** This graph will display potential outliers. The values that fall outside the dashed red lines (Cook's distance) are outliers for the model. Watch for drastic departures of the solid red line from horizontal - this is a sign of a poor model fit.
 
 ```{r, fig.height = 3, fig.width = 4}
-par(mfrow = c(2,2), mar=c(4,4,4,4))
-plot(irradiance.regression)
+par(mfrow = c(2,2), mar=c(4,4,4,4)) #dividing plot screen into a grid
+plot(irradiance.regression) #call plot and provide r wiht linear model object
 par(mfrow = c(1,1))
 ```
 
@@ -114,19 +117,23 @@ The option best suited for communicating findings is to plot the explanatory and
 # Plot the regression
 irradiancebydepth <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
-  ylim(0, 2000) +
+  ylim(0, 2000) + #changing plot window to not show the outlier
   geom_point() 
 print(irradiancebydepth) 
+
+#shows that we do NOT have a linear relationship, so want to trasnform it (next chunk)
 ```
 
 Given the distribution of irradiance values, we don't have a linear relationship between x and y in this case. Let's try log-transforming the irradiance values. Note we also removing the observations that seems to ba an outlier.
 
 ```{r, fig.height = 3, fig.width = 4}
 PeterPaul.chem.nutrients <- filter(PeterPaul.chem.nutrients, 
-                                   irradianceWater != 0 & irradianceWater < 5000)
-irradiance.regression2 <- lm(data = PeterPaul.chem.nutrients, log(irradianceWater) ~ depth)
+                                   irradianceWater != 0 & irradianceWater < 5000) #getting rid of the outliers
+irradiance.regression2 <- lm(data = PeterPaul.chem.nutrients, log(irradianceWater) ~ depth) #then running regression again using the LOG of irradiance!!
 summary(irradiance.regression2)
+#note that this makes the r^2 to 0.7255 instead of 0.30, this makes our regression line better fit to the data
 
+#Now plotting the 4 plots in grid again, they look better than before
 par(mfrow = c(2,2), mar=c(4,4,4,4))
 plot(irradiance.regression2)
 par(mfrow = c(1,1))
@@ -135,7 +142,7 @@ par(mfrow = c(1,1))
 irradiancebydepth2 <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
   geom_smooth(method = "lm") +
-  scale_y_log10() +
+  scale_y_log10() + #y axis will be the log transformed irradiance, makes a straight line; this also has a gray confidence interval line which you can mess with (see below)
   geom_point() 
 print(irradiancebydepth2) 
 
@@ -155,9 +162,10 @@ print(irradiancebydepth2)
 It is possible, and often useful, to consider multiple continuous explanatory variables at a time in a linear regression. For example, total phosphorus concentration in Paul Lake (the unfertilized lake) could be dependent on depth and dissolved oxygen concentration: 
 
 ``` {r, fig.height = 3, fig.width = 4}
-TPregression <- lm(data = subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), 
-                   tp_ug ~ depth + dissolvedOxygen)
+TPregression <- lm(data = subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), #choosing a subset of the data for only Paul Lake
+                   tp_ug ~ depth + dissolvedOxygen) #column is tp_ug
 summary(TPregression)
+#note that p-value is less than 0.05, which is good; the r^2 is only 0.29 which isnt great (only 30% of the variability can be explained)
 
 TPplot <- ggplot(subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), 
                  aes(x = dissolvedOxygen, y = tp_ug, color = depth)) +
@@ -165,30 +173,48 @@ TPplot <- ggplot(subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"),
   xlim(0, 20)
 print(TPplot)
 
+#Look at residual plots
 par(mfrow = c(2,2), mar=c(4,4,4,4))
 plot(TPregression)
 par(mfrow = c(1,1))
 
+#Plot one: looking for symmetry (this does not have it)
+#Plot two: QQ not too bad but does have some variation at the ends
+#Plot three: looking for symmetry (same probs as plot 1)
+#Plot four: shows some obs are outliers
+
 ```
 
 ## Correlation Plots
+Trying to make regression better!!
+We want to figure out what is impacting the tp_ug that are not just depth and oxygen.
+
 We can also make exploratory plots of several continuous data points to determine possible relationships, as well as covariance among explanatory variables. 
 
 ```{r, fig.height = 3, fig.width = 4}
 #install.packages("corrplot")
 library(corrplot)
+
+#creating new dataframe 
 PeterPaulnutrients <- 
   PeterPaul.chem.nutrients %>%
   select(tn_ug:po4) %>%
   na.omit()
-PeterPaulCorr <- cor(PeterPaulnutrients)
-corrplot(PeterPaulCorr, method = "ellipse")
-corrplot.mixed(PeterPaulCorr, upper = "ellipse")
+
+#create correlation matrix
+PeterPaulCorr <- cor(PeterPaulnutrients) #creates a matrix filled wiht numbers
+corrplot(PeterPaulCorr, method = "ellipse") #correlation plot matrix
+#oval shapes represent correlation (skinny means higher correlation, dark blue means strong positive, dark red means strong negative)
+corrplot.mixed(PeterPaulCorr, upper = "ellipse") #just printing upper diagonal with upper being the ovals and lower will be the values
+
+#independent var is tp_ug, we are trying to find what is impacting it, we want a high r^2 but not with TOOOO many variables
 ```
 
 ## AIC to select variables
 
-However, it is possible to over-parameterize a linear model. Adding additional explanatory variables takes away degrees of freedom, and if explanatory variables co-vary the interpretation can become overly complicated. Remember, an ideal statistical model balances simplicity and explanatory power! To help with this tradeoff, we can use the **Akaike's Information Criterion (AIC)** to compute a stepwise regression that either adds explanatory variables from the bottom up or removes explanatory variables from a full set of suggested options. The smaller the AIC value, the better. 
+However, it is possible to over-parameterize a linear model. Adding additional explanatory variables takes away degrees of freedom, and if explanatory variables co-vary the interpretation can become overly complicated. Remember, an ideal statistical model balances simplicity and explanatory power! 
+
+To help with this tradeoff, we can use the **Akaike's Information Criterion (AIC)** to compute a stepwise regression that either adds explanatory variables from the bottom up or removes explanatory variables from a full set of suggested options. The smaller the AIC value, the better. 
 
 Let's say we want to know which explanatory variables will allow us to best predict total phosphorus concentrations. Potential explanatory variables from the dataset could include depth, dissolved oxygen, temperature, PAR, total N concentration, and phosphate concentration.
 
@@ -197,12 +223,16 @@ Paul.naomit <- PeterPaul.chem.nutrients %>%
   filter(lakename == "Paul Lake") %>%
   na.omit()
 
+#new regression with all the vars
 TPAIC <- lm(data = Paul.naomit, tp_ug ~ depth + dissolvedOxygen + 
-              temperature_C + tn_ug + po4)
+              temperature_C + tn_ug + po4) #calling ALL nutrients as explanatory vars (5 cols of dataset)
 
 #Choose a model by AIC in a Stepwise Algorithm
 step(TPAIC)
+# Results are showing results when each var is removed one at a time; looking at AIC value and trying to get smaller. If a var is removed and AIC gets worse, you do not want to remove it.
+
 TPmodel <- lm(data = Paul.naomit, tp_ug ~ dissolvedOxygen + temperature_C + tn_ug)
 summary(TPmodel)
+#The result is actually worse in this case, but usually it makes it better.
 
 ```
