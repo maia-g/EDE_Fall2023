@@ -59,15 +59,16 @@ EPAair$Date <- as.Date(EPAair$Date, format = "%Y-%m-%d")
 > Exercise 1: State the hypotheses for testing mean of AQI index.
 
 > Answer: 
-H0: mu >= 50
+H0: mu >= 50 #the = will always be on the null, not the alt
 Ha: mu < 50
 
 ```{r}
 summary(EPAair$Ozone) #mean = 40.88 and median = 40
 length(EPAair$Ozone) #8976 observations
 
-O3.onesample <- t.test(EPAair$Ozone, mu = 50, alternative = "less")
+O3.onesample <- t.test(EPAair$Ozone, mu = 50, alternative = "less") #could have also said 'greater' if that was the alt
 O3.onesample
+#reject the null bc p val is really small
 
 Ozone.plot <- ggplot(EPAair, aes(x = Ozone)) +
   geom_density(fill = "gray") +
@@ -75,6 +76,7 @@ Ozone.plot <- ggplot(EPAair, aes(x = Ozone)) +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = c(0, 0))
 print(Ozone.plot)
+#plot shows that most values fall to below the green line, which means our avg will also be to the left
 
 # Format as a GLM
 O3.onesample2 <- lm(Ozone ~ 1, EPAair)
@@ -95,17 +97,19 @@ Are Ozone levels different between 2018 and 2019?
 ```{r}
 #First let's look at the data
 ggplot(EPAair, aes(x = Ozone, color = as.factor(Year))) +
-  geom_freqpoly()
+  geom_freqpoly() #generating freq plot for each year we have
 
 #Format as a t-test
 #EPAair$Ozone will be our continuous dependent variable
 #EPAair$Year will be our categorical variable with two levels (2018 and 2019)
 O3.twosample <- t.test(EPAair$Ozone ~ EPAair$Year)
 O3.twosample
+#pval is less than .05 so we reject the null, the ttest tells us the the difference between the mean is not 0
 
 # Format as a GLM
 O3.twosample2 <- lm(EPAair$Ozone ~ EPAair$Year)
 summary(O3.twosample2)
+#ask if year is a predictor of Ozone levels to form this equation, shows that year IS a predictor of Ozone levels
 
 ```
 
