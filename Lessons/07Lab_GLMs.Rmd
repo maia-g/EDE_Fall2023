@@ -47,8 +47,49 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 3. geom_violin of ozone divided by year, with the 0.5 quantile marked as a horizontal line. Add letters representing a significant difference between 2018 and 2019. 
 
 ```{r}
-#Exercise 1:
+#Exercise 1: Density plot means y axis is frequency, so you need to specify Ozone as x
+oz_density_plot <- 
+  ggplot(EPAair, aes(Ozone, fill=factor(Year))) + #this makes r know to make Year into a factor with two levels (2018 and 2019)
+  geom_density(alpha = 0.2) + #alpha changes the transparency
+  theme_bw() + #this changes the colors, can also use "scale_fill_manual(values = c("darkgreen", "lightblue"))
+  labs(x = "Ozone AQI value",
+       y = "Density",
+       fill = "") #this makes the legend title be gone
 
+oz_density_plot
+
+#Excercise 2:
+oz_boxplot <- 
+  ggplot(EPAair, aes(x = factor(Year),
+                     y = Ozone)) +
+  geom_boxplot() +
+  stat_summary(geom = "text", #this lets us add stats to our plot easily
+               fun = max,
+               vjust = -1,
+               size = 4,
+               label = c("b", "a")) +
+  labs(y = "Ozone AQI Value",
+       x = "") +
+  ylim(0,150)
+
+oz_boxplot
+
+#Excercise 3:
+oz_violin <- 
+  ggplot(EPAair, aes(x = factor(Year),
+                     y = Ozone)) +
+  geom_violin(draw_quantiles = 0.5) +
+  stat_summary(geom = "text", #this lets us add stats to our plot easily
+               fun = max, #this can be anything, mean, median, quartiles
+               vjust = -1,
+               size = 4,
+               label = c("2018 Max", "2019 Max")) +
+  labs(y = "Ozone AQI Value",
+       x = "") +
+  ylim(0,150)
+
+oz_violin
+  
 
 ```
 
@@ -61,11 +102,20 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 ```{r}
 
 #Exercise 2: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
-
-
+PM2.5_Oz.regression <- 
+  lm(EPAair$PM2.5 ~ 
+       EPAair$Ozone)
+summary(PM2.5_Oz.regression)
+#p-value: < 2.2e-16; R-squared: 0.1314
 
 #Exercise 3: Build a scatterplot. Add a line and standard error for the linear regression. Add the regression equation to the plot
+PM2.5byOzone <- 
+  ggplot(EPAair, aes(x = Ozone, y = PM2.5)) +
+  ylim(0, 100) + 
+  geom_point() +
+  geom_smooth(method = "lm")
 
+print(PM2.5byOzone) 
 
 
 ```
@@ -78,7 +128,13 @@ What other variables can we add to improve model?
 ```{r}
 
 #Exercise 4: Build correlation plots and identify more possible explanatory variables to add to the regression.
+library(corrplot)
+library(dplyr)
 
+EPAair.subset <-
+  EPAair %>%
+  select(mean_Lat:Ozone) %>%
+  
 
 
 
