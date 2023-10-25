@@ -83,7 +83,8 @@ temp_depth_plot <-
   geom_point() + # Scatterplot
   geom_smooth(method = "lm") + # Adding line of best fit
   labs(y = "Temperature (C)",
-       x = "Depth (meters)") + # Editing axis titles
+       x = "Depth (meters)",
+       title = "Lake Temperature by Depth") + # Editing axis titles
   ylim(0,35) # Limiting temp values
 
 temp_depth_plot
@@ -157,8 +158,8 @@ Jul.Temp.Avg <- Jul.lake.chem.phys %>%
   group_by(lakename, daynum, depth) %>%
   summarise(temperature_C = mean(temperature_C))
 
-summary(Jul.Temp.Avg)
-summary(Jul.Temp.Avg$lakename)
+#summary(Jul.Temp.Avg) # Use this and following to check data
+#summary(Jul.Temp.Avg$lakename)
 
 # Format ANOVA as aov
 Jul.Temp.Avg.anova <- aov(data = Jul.Temp.Avg, temperature_C ~ lakename)
@@ -189,7 +190,7 @@ temp_depth_ANOVA_plot <-
   labs(y = "Temperature (C)",
        x = "Depth (meters)",
        color = "Lake Name",
-       title = "Average Temperature per Day by Depth in Each Lake") +
+       title = "Average Temperature by Depth in Each Lake") +
   ylim(0,35)
 
 temp_depth_ANOVA_plot
@@ -206,20 +207,32 @@ TukeyHSD(Jul.Temp.Avg.anova)
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer: Central Long Lake, Crampton Lake, East Long Lake, Tuesday Lake all have the same mean temperature, statistically spekaing, as Peter Lake. It does not look like any lake is statistically distinct from all other lakes.
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: A two-sample t-test could be run since we want to test the hypothesis that the means of the two lakes are equivalent. A low p-vale of less than 0.05 would tell us that the means ARE statistically different from each other.
 
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+# Wrangle the data
+Cram.Ward.combo <- Jul.Temp.Avg %>%
+  filter(lakename %in% c("Crampton Lake", "Ward Lake"))
+
+# Used the following to make sure the filter worked properly
+    #summary(Cram.Ward.combo$lakename)
+    #summary(Jul.Temp.Avg$lakename)
+
+# Two-sample T-test
+temp.twosample <- 
+  t.test(Cram.Ward.combo$temperature_C ~ Cram.Ward.combo$lakename)
+temp.twosample
 
 ```
 
->Answer: 
+>Answer: The results give a p-vale > 0.05, therefore we fail to reject the null hypothesis and can conclude that there is not a signficant difference in the mean temperatures between the two lakes. This does match my number 16, because the TukeyHSD test resulted in a p-adj > 0.05 for Crampton and Ward lakes, which also meant that there was not a significant difference between the temperatures of those lakes. 
