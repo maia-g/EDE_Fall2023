@@ -124,15 +124,16 @@ dim(GaringerOzone)
 
 ```{r}
 #7
-Oz.by.time <- 
+Oz.by.time.plot <- 
   ggplot(GaringerOzone,
          aes(x = Date,
              y = Daily.Max.8.hour.Ozone.Concentration)) +
   geom_line() +
   geom_smooth(method = "lm") +
-  labs(y = "Ozone Concentrations (ppm)")
+  labs(y = "Ozone Concentrations (ppm)",
+       title = "Ozone Concentrations Over Time")
 
-Oz.by.time
+Oz.by.time.plot
 ```
 
 >Answer: The ozone concentrations appear to fluctuate seasonally, but over a long period of time have not changed much. If anything, there is a very slight negative trend. 
@@ -206,10 +207,11 @@ GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$Mean_Oz,
 
 ```{r}
 #11
-
+# Deocomposing daily first
 daily_data_decomp <- stl(GaringerOzone.daily.ts,s.window = "periodic")
 plot(daily_data_decomp)
 
+# Decomposing monthly next
 monthly_data_decomp <- stl(GaringerOzone.monthly.ts,s.window = "periodic")
 plot(monthly_data_decomp)
 ```
@@ -219,26 +221,34 @@ plot(monthly_data_decomp)
 
 ```{r}
 #12
-
-
+monthly_Oz_trend <- Kendall::SeasonalMannKendall(GaringerOzone.monthly.ts)
+monthly_Oz_trend
 
 ```
 
-> Answer: 
+> Answer: It is the only trend analysis for seasonal data.
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
 ```{r}
 # 13
+monthly.Oz.time.plot <-
+  ggplot(GaringerOzone.monthly,
+         aes(x = Date,
+             y = Mean_Oz)) +
+  geom_point() +
+  geom_line() +
+#  geom_smooth(method = "lm") +
+  labs(y = "Mean Monthly Ozone (ppm)",
+       title = "Mean Monthly Ozone Concentration Over Time")
 
-
-
+monthly.Oz.time.plot
 
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: In this case, the null hypothesis would be that there was no change in ozone concentrations. The alternative would be that there was some change in ozone concentrations. The results of the Seasonal Mann-Kendall test revealed a p-value of less than 0.05, which means we can reject the null hypothesis and conclude that there is a significant decrease in ozone concentrations over the 2010s at this station (tau = -0.143, 2-sided pvalue =0.046724).
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -246,14 +256,20 @@ plot(monthly_data_decomp)
 
 ```{r}
 #15
+GaringerMonthly.Components <- as.data.frame(monthly_data_decomp$time.series[,1:3])
 
-
-
+GaringerMonthly.nonseasonal <-
+  GaringerMonthly.Components %>%
+  mutate(Date = GaringerOzone.monthly$Date,
+         Observed = GaringerOzone.monthly$Mean_Oz,
+         Nonseasonal = Observed - seasonal)
 #16
-
-
-
+nonseasonal.monthly.ts <- ts(GaringerMonthly.nonseasonal$Nonseasonal,
+                             start = c(f_year, f_month),
+                             frequency = 12)
+nonseasonal.monthly_Oz_trend <- Kendall::MannKendall(nonseasonal.monthly.ts)
+nonseasonal.monthly_Oz_trend
 
 ```
 
-> Answer: 
+> Answer: After subtracting the seaosnal component, the Mann-Kendall test shows an even smaller p-value than the seasonal one. This means we can conclude with more certainty that there is a significant negative trend in ozone concentration over time (tau = -0.165, 2-sided pvalue =0.0075402). 
