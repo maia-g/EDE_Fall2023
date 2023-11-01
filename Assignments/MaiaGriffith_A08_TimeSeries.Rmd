@@ -207,7 +207,11 @@ GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$Mean_Oz,
 ```{r}
 #11
 
+daily_data_decomp <- stl(GaringerOzone.daily.ts,s.window = "periodic")
+plot(daily_data_decomp)
 
+monthly_data_decomp <- stl(GaringerOzone.monthly.ts,s.window = "periodic")
+plot(monthly_data_decomp)
 ```
 
 
