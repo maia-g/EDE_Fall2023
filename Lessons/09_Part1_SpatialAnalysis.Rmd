@@ -119,7 +119,19 @@ EPAair.sf <- EPAair.sites %>%
            crs=4326)
 
 #View the data using the methods above...
+#Explore
+class(EPAair.sf)
+names(EPAair.sf)
+str(EPAair.sf$geometry)
 
+#View using sf plot
+plot(EPAair.sf['count_all'],pch=16)
+
+#View using ggplot
+ggplot(data=EPAair.sf) + geom_sf()
+
+#View using mapview
+mapview(EPAair.sf)
 ```
 
 ### EXERCISE: Creating a spatial dataframe from known coordinates
@@ -128,12 +140,12 @@ EPAair.sf <- EPAair.sites %>%
 #First create a simple feature geometry object ("sfg")
 sfg_GraingerHall <- st_point(c(-78.9427,36.00465))
 class(sfg_GraingerHall)
-mapview(sfg_GraingerHall)
+mapview(sfg_GraingerHall) #Just shows a point on a gray background
 
 #Upgrade to a simple feature geometry column by adding a crs 
 sfc_GraingerHall <- st_sfc(sfg_GraingerHall,crs=4326)
 class(sfc_GraingerHall)
-mapview(sfc_GraingerHall)
+mapview(sfc_GraingerHall) #Shows a point on a map
 
 #Upgrade to a spatial dataframe
 sf_GraingerHall <- st_as_sf(sfc_GraingerHall)
