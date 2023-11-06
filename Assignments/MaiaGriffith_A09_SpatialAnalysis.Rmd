@@ -47,20 +47,20 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
-counties_sf<- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
-  filter(STATEFP == 37) #Filter for just NC Counties
+NEcounties_sf<- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
+  filter(STATEFP == 31) #Filter for just NE Counties
 
 #4. Reveal the CRS of the counties features
-
+st_crs(NEcounties_sf)$epsg 
 
 #5. Plot the data
-
+mapView(NEcounties_sf, zcol = 'ALAND') # Map colored by Land Area
 ```
 
 6. What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (Or, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: look for the EPSG code on <https://spatialreference.org> and examine the link for "Well Known Text as HTML" or "Human-Readable OGC WKT"...)
 
 > ANSWER: 
-> 
+> Code is 4269. This is a geographic system (coordinates measured in degrees not planar units) associated with the North American Datum 1983 (NAD83).
 
 
 ### Read in gage locations csv as a dataframe, then display the column names it contains
@@ -73,16 +73,17 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
-
+gages <- read.csv("Data/Raw/NWIS_SiteInfo_NE_RAW.csv")
+# class(gages)
 
 #8. Reveal the names of the columns
-
+colnames(gages)
 
 ```
 
 9. What columns in the dataset contain the x and y coordinate values, respectively?  
 > ANSWER:
-> 
+> dec_long_va (x values) and dec_lat_va (y values)
 
 
 ### Convert the dataframe to a spatial features ("sf") dataframe
@@ -94,17 +95,19 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Convert dataframe to sf dataframe}
 #10. Convert to an sf object
-
+gages_sf <- gages %>%
+  st_as_sf(coords = c('dec_long_va','dec_lat_va'), 
+           crs = 4269) #convert to spatial features
 
 #11. Re-examine the column names
-
+colnames(gages_sf)
 
 ```
 
 12. What new field(s) appear in the sf dataframe created? What field(s), if any, disappeared?
 
 >ANSWER: 
->
+> The lat and long fields disappeared and the geometry field was created.
 
 
 ### Plot the gage locations on top of the counties
@@ -116,7 +119,13 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
+NE_gages_plot <- 
+  ggplot() +
+  geom_sf(data = NEcounties_sf, alpha = 0.6) +
+  geom_sf(data = gages_sf, color = 'blue')
 
+NE_gages_plot
+ 
 
 ```
 
