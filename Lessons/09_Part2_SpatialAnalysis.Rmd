@@ -397,12 +397,11 @@ tri_sf <- counties_sf_utm %>%
 
   
 #Grab the intersecting HUC_8s
-HUC_intersect <- tri_sf %>% st_filter(huc8_sf)
+#HUC_intersect <- tri_sf %>% st_filter(huc8_sf)
 HUC_intersect_sf <- tri_sf %>% 
   st_intersection(huc2_utm)
 
 #Intersect the HUC_8s (aka create new features, basically a clip function in ArcPro)
-
 
 
 ```
