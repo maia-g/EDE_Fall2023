@@ -14,7 +14,7 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 3. Use the lesson as a guide. It contains code that can be modified to complete the assignment.
 4. Work through the steps, **creating code and output** that fulfill each instruction.
 5. Be sure to **answer the questions** in this assignment document. Space for your answers is provided in this document and is indicated by the ">" character. If you need a second paragraph be sure to start the first line with ">". You should notice that the answer is highlighted in green by RStudio.
-5. When you have completed the assignment, **Knit** the text and code into a single HTML file.
+6. When you have completed the assignment, **Knit** the text and code into a single HTML file.
 
 
 ## DATA WRANGLING
