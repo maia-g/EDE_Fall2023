@@ -122,11 +122,12 @@ colnames(gages_sf)
 NE_gages_plot <- 
   ggplot() +
   geom_sf(data = NEcounties_sf, alpha = 0.6) +
-  geom_sf(data = gages_sf, color = 'blue')
+  geom_sf(data = gages_sf, color = 'blue') +
+  labs(title = "NWIS Gage Locations in Nebraska",
+       subtitle = "Maia Griffith")
 
 NE_gages_plot
  
-
 ```
 
 
@@ -174,7 +175,7 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r map gage sites}
 #Map the points, sized by gage height
-mapView(NEcounties_sf) + 
+mapView(NEcounties_sf, col.regions = "gray") + 
   mapView(NEgageflow_sf_join, zcol = "gage_ht") # magnitude of gage height by color
 
 ```
@@ -193,10 +194,13 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
-
+NEcounties_sf_utm <- st_transform(NEcounties_sf, crs = 32614)
+NEgageflow_sf_join_utm <- st_transform(NEgageflow_sf_join, crs = 32614)
 
 #21 Plot the data
-
+mapView(NEcounties_sf_utm, col.regions = "gray") +
+  mapView(NEgageflow_sf_join_utm)
+###I FEEL LIKE MY MAPS LOOK THE SAME?? COMPARE 21 WITH 19
 
 ```
 
@@ -214,13 +218,16 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r spatial selection}
 #22 Select the county
-
+colnames(NEcounties_sf_utm)
+Dawson <- NEcounties_sf_utm %>%
+  filter(NAME == "Dawson")
 
 #23 Spatially select gages within the selected county
-
+Dawson_gages <- NEgageflow_sf_join_utm[Dawson,]
 
 #24 Plot
-
+mapView(list(NEcounties_sf_utm, Dawson, Dawson_gages), 
+        col.regions = list("gray", "blue", "red"))
 
 
 ```
