@@ -109,7 +109,7 @@ st_bbox(counties_sf)
 head(counties_sf)
 
 #Plot the data, colored by area of land in each county
-mapView(counties_sf, zcol = "AWATER")
+mapView(counties_sf, zcol = "ALAND")
 ```
 
 ### 2.2.2 Read in and explore 8-digit HUC watersheds for NC
