@@ -73,8 +73,9 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
-gages <- read.csv("Data/Raw/NWIS_SiteInfo_NE_RAW.csv")
-# class(gages)
+gages <- read.csv("Data/Raw/NWIS_SiteInfo_NE_RAW.csv",
+                  stringsAsFactors = TRUE,
+                  colClasses = c('site_no' = 'factor')) 
 
 #8. Reveal the names of the columns
 colnames(gages)
@@ -146,18 +147,17 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 
 ```{r Read in gage site data}
 #14. Read the site flow data into a data frame
-NE_site_flow <- read.csv("Data/Raw/NWIS_SiteFlowData_NE_RAW.csv", 
-                         colClasses = c('station_nm' = 'factor', 
-                                        'date' = 'factor')) ### HHOW TO KNOW WHAT FIELDS TO MAKE FACTORS OR NOT??
+NE_site_flow <- read.csv("Data/Raw/NWIS_SiteFlowData_NE_RAW.csv",
+                         stringsAsFactors = TRUE,
+                         colClasses = c('site_no' = 'factor'))
 
 #15. Show the column names
-colnames(NE_site_flow) ### WHY DON'T ALL THE FIELDS SHOW WHEN IMPORTING?
+colnames(NE_site_flow)
 
 #16. Join the flow data to our NWIS gage location spatial dataframe
 # Inner join only keeps observations where both have data
 NEgageflow_sf_join <- gages_sf %>% 
   inner_join(NE_site_flow, by = "station_nm") 
-
 
 #17. Show the column names of the joined dataset
 colnames(NEgageflow_sf_join)
@@ -199,8 +199,7 @@ NEgageflow_sf_join_utm <- st_transform(NEgageflow_sf_join, crs = 32614)
 
 #21 Plot the data
 mapView(NEcounties_sf_utm, col.regions = "gray") +
-  mapView(NEgageflow_sf_join_utm)
-###I FEEL LIKE MY MAPS LOOK THE SAME?? COMPARE 21 WITH 19
+  mapView(NEgageflow_sf_join_utm, cex = "gage_ht")
 
 ```
 
@@ -228,6 +227,5 @@ Dawson_gages <- NEgageflow_sf_join_utm[Dawson,]
 #24 Plot
 mapView(list(NEcounties_sf_utm, Dawson, Dawson_gages), 
         col.regions = list("gray", "blue", "red"))
-
 
 ```
