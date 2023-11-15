@@ -99,7 +99,24 @@ ggplot(gage_data,aes(x=datetime,y=discharge_cfs)) +
 > Alter the above code so that it plots the last *24* days of flow for gage *02085070*
 
 ```{r EXERCISE - pull.and.plot.other.discharge.data}
+#Set the URL
+theURL2 <- 'https://waterdata.usgs.gov/nwis/uv?search_site_no=02085070&period=24&format=rdb'
 
+#Get the data, which starts on line 30, and only get last 24 days
+gage_data2 <- read.table(theURL2,skip = 30,header=TRUE,sep='\t',stringsAsFactors = T) 
+
+#Update the column headers
+colnames(gage_data2) = c("agency_cd", "site_no", "datetime", "tz_cd",
+                        "discharge_cfs", "89192_00060_cd", "gage_ht_ft", "89193_00065_cd")
+#Tidy the data
+gage_data2 <- gage_data2 %>% 
+  select(datetime, discharge_cfs,gage_ht_ft) %>% 
+  mutate(datetime = ymd_hm(datetime))
+
+#Plot
+ggplot(gage_data2,aes(x=datetime,y=discharge_cfs)) + 
+  geom_line() +
+  labs(x = "Date",y = "Discharge (cfs)")
 ```
 
 
@@ -162,12 +179,14 @@ You'll also need to look up the IDs of the variables you want to extract. Those 
 
 ```{r}
 #Apply the API key
-#census_api_key("d4ad7874c996c7a83fec0a81466309ddc07d8e22a", install = TRUE)
+census_api_key("d4ad7874c996c7a83fec0a81466309ddc07d8e22a", install = TRUE, overwrite = TRUE)
+
+readRenviron("~/.Renviron")
 
 nc_pop <- 
-  get_acs(geography = "county",
-          variables = "B01003_001",
-          state = "NC",
+  get_acs(geography = "county", #get_acs is part of the tidycenus package
+          variables = "B01003_001", #code for overall population; you can look up other codes
+          state = "NC", #filter by geography
           geometry = TRUE)
 
 ggplot(nc_pop, aes(fill = estimate)) +
@@ -201,17 +220,22 @@ The RVest scraping workflow is as follows:
 
 ```{r EXERCISE - scrape.data.manually eval=FALSE}
 #1 Link to the web site using read_html
-the_website <- 
+the_website <- read_html("https://www.eia.gov/electricity/state/")
 
 #2&3 Locate elements and read their text attributes into variables
-the_states <- 
-the_price <- 
-the_capacity <- 
-net_generation <- 
-total_retail <- 
+the_states <- the_website %>% html_nodes('tr :nth-child(1)') %>% html_text()
+the_price <- the_website %>% html_nodes('tr :nth-child(2)') %>% html_text()
+the_capacity <- the_website %>% html_nodes('tr :nth-child(3)') %>% html_text()
+net_generation <- the_website %>% html_nodes('tr :nth-child(4)') %>% html_text()
+total_retail <- the_website %>% html_nodes('tr :nth-child(5)') %>% html_text()
   
 #3 Construct a dataframe from the values
-
+df_states_energy <- data.frame(
+  'State' = the_states,
+  'Price' = as.numeric(the_price), #make the numbers into numerals
+  'Capacity' = as.numeric(gsub(',','', the_capacity)), #gsub used to tell as.numeric what things are also included 
+  'Net Generation' = as.numeric(gsub(",","",total_retail))
+  )
 ```
 
 
@@ -225,20 +249,41 @@ scrape.it <- function(the_year){
 
   #Fetch the website
   #<enter code from above here> 
+  the_website <- read_html(the_url)
+
+#2&3 Locate elements and read their text attributes into variables
+the_states <- the_website %>% html_nodes('tr :nth-child(1)') %>% html_text()
+the_price <- the_website %>% html_nodes('tr :nth-child(2)') %>% html_text()
+the_capacity <- the_website %>% html_nodes('tr :nth-child(3)') %>% html_text()
+net_generation <- the_website %>% html_nodes('tr :nth-child(4)') %>% html_text()
+total_retail <- the_website %>% html_nodes('tr :nth-child(5)') %>% html_text()
   
-  #Scrape the data
-  #<enter code from above here>
-  
-  #Convert to dataframe
-  #<enter code from above here>
+#3 Construct a dataframe from the values
+the_df <- data.frame(
+  'State' = the_states,
+  'Price' = as.numeric(the_price), #make the numbers into numerals
+  'Capacity' = as.numeric(gsub(',','', the_capacity)), #gsub used to tell as.numeric what things are also included 
+  'Net Generation' = as.numeric(gsub(",","",total_retail))
+  )
+
+#Add year column
+the_df['year'] = my(paste0('1-',the_year))
 
 
   #Return the dataframe
-  return()
+  return(the_df)
 }
 
 # Use the above function to scrape data for 2017
+df2017 <- scrape.it(2017)
 
 # Map the function to scrape data from 2017 to 2019
+df_years <- lapply(seq(2017,2022),scrape.it) %>% #X tells what to iterate the function over, then put in the function
+            bind_rows() 
 
+df_years %>%
+  filter(State %in% c("North Carolina", "South Carolina", "Virginia")) %>%
+  ggplot() +
+  geom_line(aes(year, y = Price, color = State)) +
+  scale_x_date(date_breaks = "1 year", date_labels = '%Y')
 ```
