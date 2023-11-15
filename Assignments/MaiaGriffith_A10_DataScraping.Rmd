@@ -140,7 +140,7 @@ scrape.PWSID <- function(the_PWSID, the_year){
     ) %>%
     mutate(Date = my(paste(Month,Year)))
 
-  # Return the dataframe
+  # Return the data frame
     return(water_func_df)
 }
 
@@ -177,8 +177,9 @@ Dur2015_water_plot
 df_Ash_2015 <- scrape.PWSID('01-11-010',2015)
 
 # Combine with Durham 2015 data
-df_Dur_Ash_2015 <- inner_join(df_Dur_2015, df_Ash_2015)
+df_Dur_Ash_2015 <- full_join(df_Dur_2015, df_Ash_2015)
 
+# Plot Ashville vs Durham water withdrawals
 DurAsh2015_water_plot <- 
   ggplot(df_Dur_Ash_2015) +
   geom_line(aes(x = Date,
@@ -201,18 +202,27 @@ DurAsh2015_water_plot
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 
-#Create a list of the year we want, the same length as the vector above
-the_years <- seq(2010,2020)
+#Create a list of the year we want, and the site ID of the same length
+the_years <- seq(2010,2021)
+the_site <- rep('01-11-010',12)
 
-#"Map" the "scrape.it" function to retrieve data for all these
-dfs_2020 <- map2(the_years, the_facility_ids_subset, scrape.it)
+#Use the "map2" function to retrieve data for all these and combine into one df
+dfs_Ash <- map2(the_site,the_years, scrape.PWSID) %>%
+  bind_rows()
 
-# Plot
-ggplot(the_df,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
+# Plot the new df
+ggplot(dfs_Ash,aes(x=Date,y=Monthly.Max.Day.Use)) + 
   geom_line() + 
-  geom_smooth(method="loess",se=FALSE)
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("Ashville Max Daily Withdrawals per Month"),
+       subtitle = "2010 to 2021",
+       y="Withdrawal (MGD)",
+       x="Month") +
+  scale_x_date(date_breaks = "1 year", date_labels = '%Y')
+
+
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
 > Answer:
->
+>Asheville appears to be using more water over the last few years starting around 2015, after seeing a slight decreasing trend in max usage prior to 2015.
