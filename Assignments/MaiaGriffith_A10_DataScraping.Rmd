@@ -114,28 +114,31 @@ monthly_water_plot
 
 ```{r construct.a.scraping.function}
 #6. 
-scrape.PWSID <- function(the_PWSID, the_year, the_WS){
+scrape.PWSID <- function(the_PWSID, the_year){
   # Get the proper url/website
-  the_url <- read_html(
-    'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',
-    paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',the_PWSID,'&',the_year))
+  the_url <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',the_PWSID,'&year=',the_year))
+
+  #Set the element address variables (determined in the previous step)
+  the_WS_tag <- 'div+ table tr:nth-child(1) td:nth-child(2)'
+  the_ownership_tag <- 'div+ table tr:nth-child(2) td:nth-child(4)'
+  the_MGD_tag <- 'th~ td+ td'
 
   # Locate elements and read their text attributes into variables
-#    WS_Name <- the_url %>% html_nodes('div+ table tr:nth-child(1) td:nth-child(2)') %>% html_text()
-    Ownership <- the_url %>% html_nodes('div+ table tr:nth-child(2) td:nth-child(4)') %>% html_text()
-    MGD_values <- the_url %>% html_nodes('th~ td+ td') %>% html_text()
-  
-  # Construct a dataframe from the values
-    water_func_df <- data.frame(
-      "Water System" = rep(the_WS,12),
-      "PWSID" = rep(the_PWSID,12),
-      "Ownership" = rep(Ownership,12),
-      "Monthly Max Day Use" = as.numeric(MGD_values),
-      "Month" = c("Jan", "May", "Sept", "Feb", "June", "Oct", 
-              "March", "July", "Nov", "April", "Aug", "Dec"),
-      "Year" = rep(the_year,12)
-      ) %>%
-      mutate(Date = my(paste(Month,Year)))
+  WS_Name <- the_url %>% html_nodes(the_WS_tag) %>% html_text()
+  Ownership <- the_url %>% html_nodes(the_ownership_tag) %>% html_text()
+  MGD_values <- the_url %>% html_nodes(the_MGD_tag) %>% html_text()
+
+  # Construct a data frame from the values
+  water_func_df <- data.frame(
+    "Water System" = rep(WS_Name,12),
+    "PWSID" = rep(the_PWSID,12),
+    "Ownership" = rep(Ownership,12),
+    "Monthly Max Day Use" = as.numeric(MGD_values),
+    "Month" = c("Jan", "May", "Sept", "Feb", "June", "Oct",
+            "March", "July", "Nov", "April", "Aug", "Dec"),
+    "Year" = rep(the_year,12)
+    ) %>%
+    mutate(Date = my(paste(Month,Year)))
 
   # Return the dataframe
     return(water_func_df)
@@ -148,8 +151,7 @@ scrape.PWSID <- function(the_PWSID, the_year, the_WS){
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
 # Use the function for new data frame
-df_Dur_2015 <- scrape.PWSID('03-32-010',2015,'Durham')
-
+df_Dur_2015 <- scrape.PWSID('03-32-010',2015)
 
 # Create a line plot across months for Durham 2015
 Dur2015_water_plot <- 
@@ -172,7 +174,7 @@ Dur2015_water_plot
 ```{r fetch.and.plot.Asheville.2015.data}
 #8 
 # Get Ashville 2015 data
-df_Ash_2015 <- scrape.PWSID('01-11-010',2015,'Asheville')
+df_Ash_2015 <- scrape.PWSID('01-11-010',2015)
 
 # Combine with Durham 2015 data
 df_Dur_Ash_2015 <- inner_join(df_Dur_2015, df_Ash_2015)
